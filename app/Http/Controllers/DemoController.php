@@ -84,8 +84,11 @@ class DemoController extends Controller
         // EasyPost::setApiKey(config('account.easypost_apikey'));
         $parcel = Parcel::create([
             // 'predefined_package' => $this->package($product->height, $product->width),
-            'predefined_package' => 'LargeFlatRateBox',
-            'weight' => 76.9, // $product->height,
+            'predefinded_package' => '',
+            'weight' => '1', // $product->height,
+		'height' => '1',
+		'width' => '1',
+		'length' => '1',
         ]);
         
         $shipment = Shipment::create([
