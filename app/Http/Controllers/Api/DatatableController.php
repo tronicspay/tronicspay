@@ -275,10 +275,10 @@ class DatatableController extends Controller
                 $html_out  = '';
                 $html_out .= '<div class="dropdown">';
                 $html_out .= '<button class="btn btn-primary dropdown-toggle btn-xs" type="button" id="action-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>';
-                $html_out .= '<div class="dropdown-menu" aria-labelledby="action-btn">';
+                $html_out .= '<div class="dropdown-menu dropdown-menu-right" aria-labelledby="action-btn">';
                 $html_out .= '<a href="javascript:void(0);" class="dropdown-item font14px customer-change-password" data-attr-id="' . $customers->hashedid . '" onclick="changepasswordcustomer(\'' . $customers->hashedid . '\')"><i class="fa fa-lock fa-fw"></i> Change Password</a>';
-                $html_out .= '<a class="dropdown-item font14px" href="javascript:void(0)" onclick="updatecustomer(\'' . $customers->hashedid . '\')"><i class="fa fa-edit fa-fw"></i> Edit</a>';
-                $html_out .= '<a class="dropdown-item font14px" href="javascript:void(0)" onclick="deletecustomer(\'' . $customers->hashedid . '\')"><i class="fa fa-trash-alt fa-fw"></i> Delete</a>';
+                $html_out .= '<a class="dropdown-item font14px" href="javascript:void(0)" onclick="openCustomerModal(\'' . $customers->hashedid . '\')"><i class="fa fa-edit fa-fw"></i> Edit</a>';
+                $html_out .= '<a class="dropdown-item font14px" href="javascript:void(0)" onclick="deleteCustomers([' . $customers->id . '])"><i class="fa fa-trash-alt fa-fw"></i> Delete</a>';
                 $html_out .= '</div>';
                 $html_out .= '</div>';
                 return $html_out;

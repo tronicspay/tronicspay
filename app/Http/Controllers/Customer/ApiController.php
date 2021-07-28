@@ -107,7 +107,44 @@ class ApiController extends Controller
             $response['message'] = "Password has been successfully updated";
         }
         return response()->json($response);
-    }   
+    }
+
+
+    public function GetCustomerInfo ($hashedId) {
+        $id = app('App\Http\Controllers\GlobalFunctionController')->decodeHashid($hashedId);
+
+        $customer = $this->customerRepo->findWith($id, ['bill']);
+
+        return response()->json($customer);
+    }
+
+    public function UpdateCustomerInfo (Request $request) {
+        $id = app('App\Http\Controllers\GlobalFunctionController')->decodeHashid($request['customer_id']);
+
+        $this->customerRepo->update([
+            "fname" => $request['fname'],
+            "lname" => $request['lname'],
+            "email" => $request['email']
+        ], $id);
+
+        $this->customerRepo->find($id)->bill->update([
+            "phone" => $request['bill_phone'],
+            "street" => $request['bill_street'],
+            "city" => $request['bill_city'],
+            "state" => $request['bill_state']
+        ]);
+
+        return response()->json(['status' => 'OK']);
+    }
+
+    public function DeleteCustomers (Request $request) 
+    {
+        $ids = $request['ids'];
+        foreach($ids as $id) {
+            $this->customerRepo->delete($id);
+        }
+        return response()->json(['status' => 'ok']);
+    }
 
 
     public function GetOrderItem ($hashedId) 

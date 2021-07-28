@@ -232,6 +232,9 @@ Route::group(['prefix' => 'api'], function () {
 
         Route::post('admin/customers', [App\Http\Controllers\Api\DatatableController::class, 'GetCustomers']);
         Route::patch('admin/customers/changepassword', [\App\Http\Controllers\Customer\ApiController::class, 'ChangePassword']);
+        Route::get('admin/customers/info/{hashedId}', [\App\Http\Controllers\Customer\ApiController::class, 'GetCustomerInfo']);
+        Route::delete('admin/customers/delete', [\App\Http\Controllers\Customer\ApiController::class, 'DeleteCustomers']);
+        Route::patch('admin/customers/update', [\App\Http\Controllers\Customer\ApiController::class, 'UpdateCustomerInfo']);
 
         Route::get('admin/payment', [App\Http\Controllers\Admin\PaymentPaypalController::class, 'Payment']);
         Route::get('admin/payment/status', [App\Http\Controllers\Admin\PaymentPaypalController::class, 'GetPaymentStatus']);
