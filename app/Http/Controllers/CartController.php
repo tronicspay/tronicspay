@@ -139,6 +139,9 @@ class CartController extends Controller
         $data['stateList'] = $this->stateRepo->selectlist('name', 'abbr');
         $data['brands'] = $this->brandRepo->all();
         $data['paymentList'] = $this->tablelist->payment_list;
+        // TODO
+        $config = $this->configRepo->find(1);
+        $data['insurance_fee'] = $config->insurance_fee;
         return view("front.cart.checkout", $data);
     }
 

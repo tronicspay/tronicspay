@@ -823,54 +823,23 @@ class DeviceController extends Controller
             }
 
             if ($request['cart'] != null) {
-                /**
-                 * start: easy post integration
-                 */
-
-                // EasyPost::setApiKey(config('account.easypost_apikey'));
-                // $config = $this->configRepo->find(1);
-
-                // $to_address = Address::create([
-                //     // "company" => "", // $config->company_name,
-                //     "name" => $config->company_name, // "Dr. Steve Brule",
-                //     "street1" => $config->address1, //"179 N Harbor Dr", //$config->address1,
-                //     // "street2" => $config->address2,
-                //     "city"    => $config->city, // "Redondo Beach", // $config->city,
-                //     "state"   => $config->state, // "CA", // $config->state,
-                //     "zip"     => $config->zip_code, // "90277",  // $config->zip_code,
-                //     "phone"   => $config->phone, // "310-808-5243", // $config->phone,
-                // ]);
-
-                // $from_address = Address::create([
-                //     "company" => "EasyPost",
-                //     "street1" => $address->address1, // "118 2nd Street",
-                //     "street2" => $address->address2, // "4th Floor",
-                //     "city"    => $address->city, // "San Francisco", 
-                //     "state"   => $address->state, // "CA",
-                //     "zip"     => $address->zip, // "94105",
-                //     "phone"   => $address->phone, // "415-456-7890",
-                // ]);
-
-                // // EasyPost::setApiKey(config('account.easypost_apikey'));
-                // $parcel = Parcel::create([
-                //     // 'predefined_package' => $this->package($product->height, $product->width),
-                //     'predefined_package' => 'LargeFlatRateBox',
-                //     'weight' => 76.9, // $product->height,
-                // ]);
-
-                // $shipment = Shipment::create([
-                //     'to_address'   => $to_address,
-                //     'from_address' => $from_address,
-                //     'parcel'       => $parcel
-                // ]);
-                // $shipment->buy($shipment->lowest_rate());
 
                 $shipment->buy($shipment->lowest_rate());
-                // $shipment->insure(array('amount' => 100));
 
-                /**
-                 * end: easy post integration
-                 */
+                $insurance_cost = 0;
+                if ($request['insurance_optin']) {
+                    $config = $this->configRepo->find(1);
+                    $easy_post_fee = $config->insurance_fee / 100;
+                    $merchant_fee = $easy_post_fee * 0.2;
+                    $total_fee = $easy_post_fee + $merchant_fee;
+                    $subTotal = 0;
+                    foreach ($request['cart'] as $key => $value) {
+                        $itemSubTotal = $value['amount'] * $value['quantity'];
+                        $subTotal = $subTotal + $itemSubTotal;
+                    }
+                    $insurance_cost = $total_fee * $subTotal;
+                    $shipment->insure(array('amount' => $subTotal));
+                }
 
 
                 $makeOrderRequest = [
@@ -890,7 +859,8 @@ class DeviceController extends Controller
                     'tracking_code' => $shipment->tracking_code,
                     'carrier' => $shipment->rates[0]->carrier,
                     'delivery_days' => $shipment->rates[0]->delivery_days,
-                    'shipping_tracker' => $shipment->tracker->public_url
+                    'shipping_tracker' => $shipment->tracker->public_url,
+                    'insurance_cost' => $insurance_cost
 
                 ];
 
@@ -899,7 +869,6 @@ class DeviceController extends Controller
 
                 foreach ($request['cart'] as $key => $value) {
                     $brand = $this->brandRepo->findByField('name', $value['brand']);
-                    // $product = $this->productRepo->rawByField("brand_id = ? and network = ? and storage = ? and model = ?", [$brand->id, $value['network'], $value['storage'], $value['model']]);
                     $product = $this->productRepo->rawByField("brand_id = ? and model = ?", [$brand->id, $value['model']]);
 
                     $productStorage = $this->productStorageRepo->rawByField("product_id = ? and title = ?", [$product->id, $value['storage']]);

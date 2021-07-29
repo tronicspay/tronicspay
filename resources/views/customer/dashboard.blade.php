@@ -110,11 +110,13 @@
                                                 <tr>
                                                     <!-- <th>Total Money Earned</th> -->
                                                     <th>Total Money Earned</th>
+                                                    <th>Total Orders</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
                                                     <td>${{ $total_money_earned }}</td>
+                                                    <td>{{ $total_orders }}</td>
                                                 </tr>
                                             </tbody>
                                         </table>

@@ -50,6 +50,7 @@ class DashboardController extends Controller
         }
 
         $data['total_money_earned'] = $sum_completed_order_items;
+        $data['total_orders'] = count($orders);
 
         // return "<pre>" . print_r($sum_completed_order_items, true) . "</pre>";
         return view('customer.dashboard', $data);

@@ -9,6 +9,7 @@ use App\Repositories\Customer\StateRepositoryEloquent as State;
 use App\Models\TableList;
 
 require __DIR__ . '/../../../../vendor/autoload.php';
+
 use Plivo\RestClient;
 use Plivo\Exceptions\PlivoAuthenticationException;
 use Plivo\Exceptions\PlivoRestException;
@@ -33,17 +34,17 @@ class ConfigController extends Controller
         $data['stateList'] = $this->stateRepo->selectlist('name', 'abbr');
         $data['module'] = 'config';
         $data['is_dark_mode'] = ($data['config']['is_dark_mode'] == 1) ? true : false;
-        
+
 
         $plivo_credentials = $this->tablelist->plivo_client_credentials;
 
-        $client = new RestClient($plivo_credentials['auth_id'], $plivo_credentials['auth_token']); 
+        $client = new RestClient($plivo_credentials['auth_id'], $plivo_credentials['auth_token']);
 
         $response = $client->accounts->get();
-        
-        $data['sms_remaining_credit'] = ($response->properties['cashCredits'] > 0) 
-            ? '<b class="text-green">$'.$response->properties['cashCredits'].'</b>' 
-            : '<b class="text-red">$'.$response->properties['cashCredits'].'</b>' ;
+
+        $data['sms_remaining_credit'] = ($response->properties['cashCredits'] > 0)
+            ? '<b class="text-green">$' . $response->properties['cashCredits'] . '</b>'
+            : '<b class="text-red">$' . $response->properties['cashCredits'] . '</b>';
 
         return view('admin.settings.config.index', $data);
     }
@@ -63,8 +64,9 @@ class ConfigController extends Controller
             'good' => $request['good'],
             'fair' => $request['fair'],
             'poor' => $request['poor'],
-            'is_dark_mode' => $request['is_dark_mode'], 
-            'is_sms_feature_active' => $request['is_sms_feature_active'], 
+            'is_dark_mode' => $request['is_dark_mode'],
+            'is_sms_feature_active' => $request['is_sms_feature_active'],
+            'insurance_fee' => $request['insurance_fee'],
             'notify_device_by_last_updated_date' => $request['notify_device_by_last_updated_date']
         ];
 

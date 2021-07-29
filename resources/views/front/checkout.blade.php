@@ -6,7 +6,9 @@
       <div class="col-md-4 order-md-2 mb-4">
         <h4 class="d-flex justify-content-between align-items-center mb-3">
           <span class="text-muted">Your cart</span>
-          <span class="badge badge-secondary badge-pill"><div id="badge-count">{{ $cartcount }}</div></span>
+          <span class="badge badge-secondary badge-pill">
+            <div id="badge-count">{{ $cartcount }}</div>
+          </span>
         </h4>
         <form action="{{ url('products/checkout') }}" method="POST">
           @csrf
@@ -43,7 +45,9 @@
             @endif
             <li class="list-group-item d-flex justify-content-between">
               <span>Total (USD)</span>
-              <strong><div id="cart-total-amount">${{ $totalamount }}</div></strong>
+              <strong>
+                <div id="cart-total-amount">${{ $totalamount }}</div>
+              </strong>
             </li>
           </ul>
           <div class="form-group">
@@ -119,52 +123,55 @@
 
 @section('page-css')
 <style>
-.cart-link, .cart-link:hover {
-  text-decoration: none;
-  font-size: 13px;
-  color: #dc3545;
-}
-.select-sm {
-  height: 31px;
-  padding: 0px 8px;
-  font-size: 14px;
-}
+  .cart-link,
+  .cart-link:hover {
+    text-decoration: none;
+    font-size: 13px;
+    color: #dc3545;
+  }
+
+  .select-sm {
+    height: 31px;
+    padding: 0px 8px;
+    font-size: 14px;
+  }
 </style>
 @endsection
 
 @section('page-js')
 <script>
-$(document).ready(function () {
-  var total = parseFloat($('#ship-fee').val()) + parseFloat($('#cart-total').val().replace(',',''));
-  $('#cart-total-amount').html('$'+total);
-  $('#purchase-total').val(total);
-
-  $('#ship-fee').change(function(){
-    var total = parseFloat($(this).val()) + parseFloat($('#cart-total').val().replace(',',''));
-    $('#cart-total-amount').html('$'+total);
+  $(document).ready(function() {
+    var total = parseFloat($('#ship-fee').val()) + parseFloat($('#cart-total').val().replace(',', ''));
+    $('#cart-total-amount').html('$' + total);
     $('#purchase-total').val(total);
+
+    $('#ship-fee').change(function() {
+      var total = parseFloat($(this).val()) + parseFloat($('#cart-total').val().replace(',', ''));
+      $('#cart-total-amount').html('$' + total);
+      $('#purchase-total').val(total);
+    });
   });
-});
-function removeItem(id){
-  $.ajax({
-    type: "DELETE",
-    url: "{{ url('products/cart') }}/"+id,
-    dataType: "json",
-    success: function (response) {
-      if(response.totalamount == 0){
-        var total = '0.00';
-      } else {
-        var total = parseFloat($('#ship-fee').val()) + parseFloat(response.totalamount).replace(',','');
+
+  function removeItem(id) {
+    $.ajax({
+      type: "DELETE",
+      url: "{{ url('products/cart') }}/" + id,
+      dataType: "json",
+      success: function(response) {
+        if (response.totalamount == 0) {
+          var total = '0.00';
+        } else {
+          var total = parseFloat($('#ship-fee').val()) + parseFloat(response.totalamount).replace(',', '');
+        }
+        $('#' + id).remove();
+        $('#cart-counter').html('<i class="fas fa-shopping-cart fa-fw"></i> <span>' + response.cartcount + '</span>');
+        $('#cart-total-amount').html('$' + total);
+        $('#badge-count').html(response.cartcount);
+        if (response.cartcount == 0) {
+          $('#btn-checkout').attr('disabled', true);
+        }
       }
-      $('#'+id).remove();
-      $('#cart-counter').html('<i class="fas fa-shopping-cart fa-fw"></i> <span>'+response.cartcount+'</span>');
-      $('#cart-total-amount').html('$'+total);
-      $('#badge-count').html(response.cartcount);
-      if(response.cartcount == 0){
-        $('#btn-checkout').attr('disabled', true);
-      }
-    }
-  });
-}
+    });
+  }
 </script>
 @endsection
