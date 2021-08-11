@@ -36,12 +36,7 @@ use App\Http\Requests\Admin\UserRequest;
 use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Http\Requests\Admin\SettingsBrandRequest as BrandRequest;
 
-// For Plivio
-require __DIR__ . '/../../../../vendor/autoload.php';
-
-use Plivo\RestClient;
-use Plivo\Exceptions\PlivoAuthenticationException;
-use Plivo\Exceptions\PlivoRestException;
+use Twilio\Rest\Client;
 
 class ApiController extends Controller
 {
@@ -890,20 +885,12 @@ class ApiController extends Controller
 
     public function GetSMSCredit()
     {
-        $plivo_credentials = $this->tablelist->plivo_client_credentials;
+        $client = new Client(config('services.twilio.sid'), config('services.twilio.auth_token'));
 
-        $client = new RestClient($plivo_credentials['auth_id'], $plivo_credentials['auth_token']);
+        $output['status'] = 200;
+        $output['model'] = $client->balance->fetch()->balance;
 
-        try {
-            $response = $client->accounts->get();
-            $output['status'] = 200;
-            $output['model'] = $response->properties;
-            return response()->json($output);
-        } catch (PlivoRestException $ex) {
-            $output['status'] = 400;
-            $output['error'] = $ex;
-            return response()->json($output);
-        }
+        return response()->json($output);
     }
 
     private function replaceSMSPlaceHolder($str, $order_id)

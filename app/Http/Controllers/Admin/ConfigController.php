@@ -10,9 +10,7 @@ use App\Models\TableList;
 
 require __DIR__ . '/../../../../vendor/autoload.php';
 
-use Plivo\RestClient;
-use Plivo\Exceptions\PlivoAuthenticationException;
-use Plivo\Exceptions\PlivoRestException;
+use Twilio\Rest\Client;
 
 class ConfigController extends Controller
 {
@@ -36,15 +34,13 @@ class ConfigController extends Controller
         $data['is_dark_mode'] = ($data['config']['is_dark_mode'] == 1) ? true : false;
 
 
-        $plivo_credentials = $this->tablelist->plivo_client_credentials;
+        $client = new Client(config('services.twilio.sid'), config('services.twilio.auth_token'));
 
-        $client = new RestClient($plivo_credentials['auth_id'], $plivo_credentials['auth_token']);
+        $response = $client->balance->fetch();
 
-        $response = $client->accounts->get();
-
-        $data['sms_remaining_credit'] = ($response->properties['cashCredits'] > 0)
-            ? '<b class="text-green">$' . $response->properties['cashCredits'] . '</b>'
-            : '<b class="text-red">$' . $response->properties['cashCredits'] . '</b>';
+        $data['sms_remaining_credit'] = ($response->balance > 0)
+            ? '<b class="text-green">$' . $response->balance . '</b>'
+            : '<b class="text-red">$' . $response->balance . '</b>';
 
         return view('admin.settings.config.index', $data);
     }

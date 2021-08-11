@@ -31,15 +31,6 @@ use App\Models\TableList as Tablelist;
 use Illuminate\Support\Facades\Auth;
 use PDF, DB;
 
-
-// For Plivio
-require __DIR__ . '/../../../vendor/autoload.php';
-
-use Plivo\RestClient;
-use Plivo\Exceptions\PlivoAuthenticationException;
-use Plivo\Exceptions\PlivoRestException;
-
-
 class DeviceController extends Controller
 {
     protected $brandRepo;
