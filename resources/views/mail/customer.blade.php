@@ -326,6 +326,8 @@
                                                                             <div>
                                                                                 <div class="pad10rem"><strong>{{ $order['customer']['fullname'] }}</strong><br></div>
                                                                                 <div class="pad10rem">{{ $order['customer']['bill']['address1'] }}<br></div>
+                                                                                <div class="pad10rem">{{ $order['customer']['bill']['city'] }}, {{ $order['customer']['bill']['state'] }} <br></div>
+                                                                                <div class="pad10rem">{{ $order['customer']['bill']['zip'] }}<br></div>
                                                                                 <div class="pad10rem">Phone: {{ $order['customer']['bill']['phone'] }}<br></div>
                                                                                 <div class="pad10rem">Email: {{ $order['customer']['email'] }}</div>
                                                                             </div>
@@ -436,16 +438,18 @@
                                                                         <table class="table" width="100%">
                                                                             <tbody>
                                                                                 <tr>
-                                                                                    <th style="width:50%">Subtotal:</th>
+                                                                                    <th style="width:50%">Cash Offer:</th>
                                                                                     <td>${{ number_format($overallSubTotal, 2, '.', ',') }}</td>
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <th>Shipping:</th>
-                                                                                    <td>${{ number_format($shippingFee, 2, '.', ',') }}</td>
+                                                                                    <td>Free</td>
+                                                                                    <!-- <td>${{ number_format($shippingFee, 2, '.', ',') }}</td> -->
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <th>Total:</th>
-                                                                                    <td>${{ number_format($overallSubTotal + $shippingFee, 2, '.', ',') }}</td>
+                                                                                    <td>${{ number_format($overallSubTotal, 2, '.', ',') }}</td>
+                                                                                    <!-- <td>${{ number_format($overallSubTotal + $shippingFee, 2, '.', ',') }}</td> -->
                                                                                 </tr>
                                                                             </tbody>
                                                                         </table>

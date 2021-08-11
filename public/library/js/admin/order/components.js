@@ -3,6 +3,21 @@
 var baseUrl = $('body').attr('data-url');
 
 $(function () {
+
+     $.ajax({
+        type: "GET",
+        url: baseUrl+"/admin/orders/shipping-status/" + $("#shipping-id").html(),
+        dataType: "json",
+        success: function (response) {
+            // alert(response.result.due)
+            $("#shipping-status").html(response.result.status)
+            if (response.result.due) {
+                $("#due-date").html((new Date(response.result.due)).toLocaleDateString())
+            }
+        }
+    });
+
+
     $('.btn-edit-sell-device').on('click', function () {
         $('#selectedId').val('');
         // $('#modal-order-form')[0].reset();
@@ -21,13 +36,14 @@ $(function () {
                     } else {
                         $('#order-storage-device').append('<option value="'+value.id+'">'+value.title+'</option>');
                     }
-                });
-                
-                $.each(result.productDetails.networks, function( index, value ) {
-                        $('#order-network-device').append('<option value="'+value.network_id+'">'+value.network.title+'</option>');
+                    if (result.customerSell.network_id == value.network_id) {
+                        $('#order-network-device').append('<option value="'+value.network_id+'" selected="selected">'+value.network_title+'</option>');
+                    } else {
+                        $('#order-network-device').append('<option value="'+value.network_id+'">'+value.network_title+'</option>');
+                    }
                 });
                 $('#order-quantity-device').val(result.customerSell.quantity);
-                $('#order-type-device').val(result.device_type);
+                $('#order-type-device').val(result.customerSell.device_type);
                 $('#order-type-device option[value="' + result.customerSell.device_type + '"]').attr('selected','selected');
                
             }
@@ -96,6 +112,23 @@ $(function () {
         var form_url = baseUrl+'/api/orders/'+hashedId+'/orderitem';
         doAjaxConfirmProcessing('DELETE', '', {}, form_url);
     });
+    $('#bulk-delete-rows').on('click', function () {
+        
+        var checkedCount = $("#order-table tbody tr input[type=checkbox]:checked").length;
+
+            if (checkedCount == 0) {
+                alert('Please select orders to delete.');
+                return;
+            }
+
+            var ids = [];
+            $("#order-table tbody tr input[type=checkbox]:checked").each(function(index, item) {
+                ids.push(item.value);
+            });
+
+            deleteOrders(ids);
+        
+    });
     $('.approve-order').on('click', function () {
         var id = $(this).attr('data-attr-id');
         alert(id);
@@ -124,6 +157,25 @@ $(function () {
             form_url = baseUrl+'/api/orders/'+$('#selectedStatusId').val()+'/status';
             doAjaxProcess('PUT', '.modal-status-order-form', data, form_url);
             $('.modal-button-order-status-id').removeClass('disabled');
+            if (document.querySelector("form#productForm")) location.reload()
+
+            return false;
+        })
+    }
+
+    
+    
+    if ($('#modal-reduction-order-form').length) 
+    {
+        $('#modal-reduction-order-form').on('submit', function () {
+            var data = $(this).serializeArray();
+            $('.modal-button-order-reduction').addClass('disabled');
+            $('.modal-button-order-reduction').html('<i class="fas fa-spinner fa-spin"></i> Please wait...');
+            form_url = baseUrl+'/api/orders/'+$('#selectedOrderId').val()+'/reduction';
+            doAjaxProcess('PUT', '.modal-reduction-order-form', data, form_url);
+            $('.modal-button-order-reduction').removeClass('disabled');
+            if (document.querySelector("form#productForm")) location.reload()
+
             return false;
         })
     }
@@ -161,6 +213,14 @@ $(function () {
     });
 });
 
+function OpenReductionModal (id, reduction) {
+    // $('#modal-reduction-order').html('');
+    
+    $('#reduction').val(reduction);
+    $('.modal-button-order-reduction').html('Update');
+    $('#modal-reduction-order').modal();
+    $('#selectedOrderId').val(id);
+}
 function UpdateOrderStatus (id, statusId) {
     $('.modal-order-status-id').html('');
     $('#selectedStatusId').val('');
@@ -181,6 +241,32 @@ function UpdateOrderStatus (id, statusId) {
                     } else {
                         $('.modal-order-status-id').append('<option value="'+value.id+'">'+value.name+'</option>');
                     }
+                });
+            }
+        }
+    });
+}
+
+function UpdateBulkOrderStatus (id) {
+    $('.modal-bulk-order-status-id').html('');
+    $('#selectedBulkStatusId').val('');
+    $('.modal-button-bulk-order-status-id').html('Update');
+    $('.modal-bulk-status-template-sms').addClass('hideme');
+    $('#modal-bulk-status-select-template-sms').html('<option value="">Please Select SMS Template</option>');
+    $.ajax({
+        type: "GET",
+        url: baseUrl+"/api/settings/status/filter/order",
+        dataType: "json",
+        success: function (response) {
+            $('#modal-bulk-status-order').modal();
+            if (response.status == 200) {
+                $('#selectedBulkStatusId').val(id);
+                $.each(response.model, function( index, value ) {
+                    $('.modal-bulk-order-status-id').append('<option value="'+value.id+'">'+value.name+'</option>');
+                    // if (statusId == value.id) {
+                    //     $('.modal-bulk-order-status-id').append('<option value="'+value.id+'" selected="selected">'+value.name+'</option>');
+                    // } else {
+                    // }
                 });
             }
         }
@@ -362,4 +448,22 @@ function deleteOrder (hashedId)
             // $('#modal-order-notes-div-'+hashedId).attr('style', '');
 		}
 	});
+}
+
+function deleteOrders(ids) {
+     if (!confirm('Are you sure ?')) return;
+
+    $.ajax({
+        type: 'DELETE',
+        url: baseUrl+'/admin/orders/deleteMany',
+        data: {
+            ids: ids
+        },
+        dataType: 'JSON',
+        success: function(res) {
+            alert('Deleted successfully.');
+            location.reload();
+            // customerTable.ajax.reload();
+        }
+    });
 }

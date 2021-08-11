@@ -45,7 +45,7 @@
     color: #4e4e4e;
 }
 
-.card-step-header+div {
+.card-step-header + div {
     color: #4e4e4e;
 }
 
@@ -225,7 +225,7 @@ strong {
     color: #1b7c1b;
 }
 .text-gray-1 {
-    color:#7f7b79;
+    color: #7f7b79;
 }
 .card-step1-logo {
     width: 124px;
@@ -738,4 +738,12 @@ body {
 }
 a {
     text-decoration: none !important;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0;
 }

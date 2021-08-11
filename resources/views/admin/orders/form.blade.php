@@ -23,6 +23,7 @@ $overallSubTotal = 0;
                         <address>
                             <strong>{{ $order['customer']['fullname'] }}</strong><br>
                             {{ $order['customer']['bill']['address1'] }}<br>
+                            {{ $order['customer']['bill']['city'] }}, {{ $order['customer']['bill']['state'] }}, {{ $order['customer']['bill']['zip'] }}<br>
                             Phone: {{ $order['customer']['bill']['phone'] }}<br>
                             Email: {{ $order['customer']['email'] }}
                         </address>
@@ -40,8 +41,11 @@ $overallSubTotal = 0;
                         <b>Transaction #{{ $order['order_no'] }}</b><br />
                         <br />
                         <b>Tracking No:</b> {{ $order['tracking_code'] }}<br />
-                        <b>Status:</b> {{ strtoupper(str_replace("_", " ", $order['shipping_status'])) }}<br />
-                        <b>Delivery Due:</b> {{ $order['display_delivery_due'] }}<br />
+                        <b>Status: </b><span id="shipping-status">...</span><br />
+                        <!-- <b>Status: </b><span id="shipping-status"> {{ strtoupper(str_replace("_", " ", $order['shipping_status'])) }}</span><br /> -->
+                        <b>Delivery Due: </b> <span id="due-date">...</span><br />
+                        <!-- <b>Delivery Due: </b> <span id="due-date">{{ $order['display_delivery_due'] }}</span><br /> -->
+                        <div style="display: none;" id="shipping-id">{{ $order['shipping_id'] }}</div>
                     </div>
                 </div>
 
@@ -178,20 +182,28 @@ $overallSubTotal = 0;
                                         <!-- <td>${{ number_format($overallSubTotal + $shippingFee - $order['insurance_cost'], 2, '.', ',') }}</td> -->
                                     </tr>
                                     <tr>
-                                        <th>Insurance:</th>
+                                        <th>Insurance Total:</th>
                                         <td>- ${{ number_format($order['insurance_cost'], 2, '.', ',') }}</td>
                                     </tr>
                                     <tr>
-                                        <th><em>(20% of EasyPost fee):</em></th>
-                                        <td><em>${{ number_format($order['insurance_cost'] - $order['insurance_cost'] / 1.2, 2, '.', ',') }}</em></td>
+                                        <th><em>(20% of EasyPost fee - Own):</em></th>
+                                        <td><em>${{ number_format($overallSubTotal * 0.01 * 0.2, 2, '.', ',') }}</em></td>
+                                    </tr>
+                                    <tr>
+                                        <th><em>(1% of Original Cash Offer - EasyPost):</em></th>
+                                        <td><em>${{ number_format($overallSubTotal * 0.01, 2, '.', ',') }}</em></td>
                                     </tr>
                                     <tr>
                                         <th>Final payout:</th>
-                                        <td><strong>${{ number_format($overallSubTotal - $order['insurance_cost'] - ($order['insurance_cost'] - $order['insurance_cost'] / 1.2), 2, '.', ',') }}</strong></td>
+                                        <td><strong>${{ number_format($overallSubTotal - $order['insurance_cost'], 2, '.', ',') }}</strong></td>
                                     </tr>
                                     <tr>
                                         <th>Shipping:</th>
                                         <td>+ ${{ number_format($shippingFee, 2, '.', ',') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Adjusted Cash Offer:</th>
+                                        <td><strong>${{ number_format($order['reduction'], 2, '.', ',') }}</strong></td>
                                     </tr>
                                     <!-- <tr>
                                         <th>Final payout:</th>
@@ -214,10 +226,13 @@ $overallSubTotal = 0;
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="btn-group pull-right">
+                                    <a href="#" onclick="OpenReductionModal('{{$hashedId}}', `{{$order['reduction']}}`)" class="btn btn-warning btn-sm pull-right">
+                                        <i class="fas fa-download"></i> Reduce Offer
+                                    </a>
                                     <a href="{{ url('admin/orders/'.$hashedId.'/generatePDF') }}" class="btn btn-danger btn-sm pull-right">
                                         <i class="fas fa-download"></i> Generate PDF
                                     </a>
-                                    <a href="{{ url('admin/orders/'.$hashedId.'/generatePDF') }}" class="btn btn-primary btn-sm pull-right">
+                                    <a href="#" onclick="UpdateOrderStatus('{{$hashedId}}', {{ $order['status_id'] }})" class="btn btn-primary btn-sm pull-right">
                                         <i class="fas fa-pencil-alt"></i> Change Status
                                     </a>
                                     @if($order['shipping_label'] != '')

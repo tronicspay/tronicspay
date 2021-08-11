@@ -19,11 +19,16 @@ function deleteCustomers(customerIds) {
         },
         dataType: 'JSON',
         success: function(res) {
-            alert('Deleted successfully.');
+            if (res.message) {
+                alert(res.message)
+            }
             customerTable.ajax.reload();
-        }
+  
+        },
+        
     });
 }
+
 
 function openCustomerModal(hashedId) {
     $.ajax({

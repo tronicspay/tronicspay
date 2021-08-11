@@ -10,6 +10,13 @@ use App\Repositories\Admin\OrderRepositoryEloquent as Order;
 use App\Repositories\Admin\OrderItemRepositoryEloquent as OrderItem;
 use App\Repositories\Admin\ConfigRepositoryEloquent as Config;
 use App\Repositories\Admin\ProductRepositoryEloquent as Product;
+use App\Repositories\Admin\NetworkRepositoryEloquent as Network;
+
+use EasyPost\Parcel;
+use EasyPost\Address;
+use EasyPost\Tracker;
+use EasyPost\EasyPost;
+use EasyPost\Shipment;
 use App\Models\TableList as Tablelist;
 
 class OrderController extends Controller
@@ -19,19 +26,23 @@ class OrderController extends Controller
     protected $configRepo;
     protected $productRepo;
     protected $tablelist;
+    protected $networkRepo;
+
 
     function __construct(
         Order $orderRepo,
         OrderItem $orderItemRepo,
         Config $configRepo,
         Product $productRepo,
-        Tablelist $tablelist
+        Tablelist $tablelist,
+        Network $networkRepo
     ) {
         $this->orderRepo = $orderRepo;
         $this->orderItemRepo = $orderItemRepo;
         $this->configRepo = $configRepo;
         $this->productRepo = $productRepo;
         $this->tablelist = $tablelist;
+        $this->networkRepo = $networkRepo;
     }
 
     public function index()
@@ -99,6 +110,42 @@ class OrderController extends Controller
             $this->orderItemRepo->delete($item['id']);
         }
         $this->orderRepo->delete($id);
+
+        return response()->json([
+            "status" => 200,
+            "message" => "Successfully deleted",
+        ]);
+    }
+
+
+    public function deleteMany(Request $request)
+    {
+
+        foreach ($request["ids"] as $id) {
+
+            $data = $this->orderRepo
+                ->rawByWithField(
+                    [
+                        'order_item.product',
+                    ],
+                    "id = ?",
+                    [$id]
+                );
+
+
+            if (!$data) {
+                return response()->json([
+                    "status" => false,
+                    "message" => "No order found",
+                ]);
+            }
+
+            foreach ($data['order_item'] as $item) {
+                $this->orderItemRepo->delete($item['id']);
+            }
+            $this->orderRepo->delete($id);
+        }
+
 
         return response()->json([
             "status" => 200,
@@ -216,7 +263,7 @@ class OrderController extends Controller
                                 <div class="borderedx">
                                     <table width="100%">
                                         <tr>
-                                            <td><img src="http://tronicspay.saperemarketing.com/assets/images/logo.png"></td>
+                                            <td><img src="http://tronicspay.com/assets/images/logo.png"></td>
                                             <td align=right>Date: ' . $customer_transaction['display_transaction_date'] . '</td>
                                         </tr>
                                     </table>
@@ -306,17 +353,17 @@ class OrderController extends Controller
 
         if (isset($customer_transaction) && $customer_transaction['payment_method'] != '') {
             if ($customer_transaction['payment_method'] == "Bank Transfer") {
-                $generateHtml .= '<img src="http://tronicspay.saperemarketing.com/assets/images/payments/6.png" alt="Bank Transfer" style="width: 60px;">';
+                $generateHtml .= '<img src="http://tronicspay.com/assets/images/payments/6.png" alt="Bank Transfer" style="width: 60px;">';
             } else if ($customer_transaction['payment_method'] == "Apple Pay") {
-                $generateHtml .= '<img src="http://tronicspay.saperemarketing.com/assets/images/payments/1.png" alt="Apple Pay" style="width: 60px;">';
+                $generateHtml .= '<img src="http://tronicspay.com/assets/images/payments/1.png" alt="Apple Pay" style="width: 60px;">';
             } else if ($customer_transaction['payment_method'] == "Google Pay") {
-                $generateHtml .= '<img src="http://tronicspay.saperemarketing.com/assets/images/payments/2.png" alt="Google Pay" style="width: 60px;">';
+                $generateHtml .= '<img src="http://tronicspay.com/assets/images/payments/2.png" alt="Google Pay" style="width: 60px;">';
             } else if ($customer_transaction['payment_method'] == "Venmo") {
-                $generateHtml .= '<img src="http://tronicspay.saperemarketing.com/assets/images/payments/3.png" alt="Venmo" style="width: 60px;">';
+                $generateHtml .= '<img src="http://tronicspay.com/assets/images/payments/3.png" alt="Venmo" style="width: 60px;">';
             } else if ($customer_transaction['payment_method'] == "Cash App") {
-                $generateHtml .= '<img src="http://tronicspay.saperemarketing.com/assets/images/payments/4.png" alt="Cash App" style="width: 60px; height: 30px;">';
+                $generateHtml .= '<img src="http://tronicspay.com/assets/images/payments/4.png" alt="Cash App" style="width: 60px; height: 30px;">';
             } else if ($customer_transaction['payment_method'] == "Paypal") {
-                $generateHtml .= '<img src="http://tronicspay.saperemarketing.com/assets/images/payments/5.png" alt="Paypal" style="width: 60px;">';
+                $generateHtml .= '<img src="http://tronicspay.com/assets/images/payments/5.png" alt="Paypal" style="width: 60px;">';
             }
         }
 
@@ -380,6 +427,18 @@ class OrderController extends Controller
         $data['customerSell'] = $this->orderItemRepo->rawByWithField(['product_storage'], 'id = ?', [$id]);
         $data['productDetails'] = $this->productRepo->rawByWithField(['networks.network'], 'id = ?', [$data['customerSell']['product_id']]);
         $data['productDetails']['storages'] = $data['productDetails']->storagesForBuying()->get();
+        // $networks = $data['productDetails']['networks'];
+        $curr_network_id = $data['customerSell']['network_id'];
+        $prod_storages = $data['productDetails']['storages'];
+        $all_networks = $this->networkRepo->all(null, null, ['id', 'title']);
+        foreach ($prod_storages as $k => $storage) {
+            foreach ($all_networks as $network) {
+                if ($network['id'] === $storage['network_id']) {
+                    $data['productDetails']['storages'][$k]['network_title'] = $network['title'];
+                }
+            }
+        }
+
         $config = $this->configRepo->find(1);
         return $data;
     }
@@ -392,28 +451,9 @@ class OrderController extends Controller
      * 
      * @return view
      */
-    public function bulk_update(BulkCompleteRequest $request, $type = null)
+    public function bulk_update(BulkCompleteRequest $request)
     {
-        $status_id = null;
-        switch ($type) {
-            case 'complete':
-                $status_id = 5;
-                break;
-            case 'in-transit':
-                $status_id = 3;
-                break;
-            case 'on-hold':
-                $status_id = 4;
-                break;
-            case 'have-comments':
-                $status_id = 2;
-                break;
-            case 'for-approval':
-                $status_id = 1;
-                break;
-            default:
-                $status_id = null;
-        }
+        $status_id = $request->get('status-id');
 
         if (!$status_id) {
             session()->flash("notification-status", "error");
@@ -431,5 +471,20 @@ class OrderController extends Controller
         }
 
         return redirect()->route('orders.index');
+    }
+
+
+    public function get_shipping_status($id)
+    {
+        EasyPost::setApiKey(config('account.easypost_apikey'));
+
+        $shipment = Shipment::retrieve($id);
+
+
+        // die(print_r($shipment, true));
+        return response()->json([
+            "status" => 200,
+            "result" => ["status" => $shipment->status, "due" => $shipment->tracker->est_delivery_date],
+        ]);
     }
 }

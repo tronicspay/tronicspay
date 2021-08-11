@@ -1,6 +1,6 @@
 @extends('layouts.front')
 @section('content')
-
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 <div class="pt-70 pb50 d-none" id="whole-content">
     <div class="container pt-50">
         <div class="row">
@@ -49,6 +49,12 @@
                                                 @csrf
                                                 <h5>Provide your shipping address</h5>
                                                 <p>We use this information to create your shipping labels so you can send your item to us for free!</p>
+                                                <div class="form-row">
+                                                    <label class="full-field">
+                                                        <span class="form-label">Deliver to*</span>
+                                                        <input id="autocomplete-input" name="autocomplete-input" required autocomplete="off" />
+                                                    </label>
+                                                </div>
                                                 <div class="form-row">
                                                     <div class="form-group col-md-6">
                                                         <label class="col-form-label col-form-label-sm">First Name</label>
@@ -244,6 +250,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/11.0.9/js/intlTelInput.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/11.0.9/js/intlTelInput.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/11.0.9/js/utils.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=!1m18!1m12!1m3!1d3097.2195538694464!2d-94.41648289308372!3d39.07869647373669!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x87c0fdf2628895ff%3A0x74b538aa176b05bc!2sTronics%20Pay!5e0!3m2!1sen!2sph!4v1605701145623!5m2!1sen!2sph&callback=initAutocomplete&libraries=places&v=weekly" async></script>
 <script>
     if (document.readyState == "loading") {
         if (!localStorage.getItem('sessionCart')) {
@@ -271,7 +278,7 @@
                     if (response.hasCart) {
                         $('.cart-subtotal, .cart-total').html(response.subTotal);
                         const easyPostFee = Number(document.querySelector("#insurance-optin").dataset.insurance) / 100
-                        const merchantFee = easyPostFee * 0.2
+                        const merchantFee = (20 / 100) * easyPostFee
                         const totalFee = easyPostFee + merchantFee
                         document.querySelector("#insurance-price").innerHTML = (totalFee * Number(response.subTotal.replace("$", ""))).toFixed(2)
                     }

@@ -22,6 +22,8 @@ use App\Repositories\Admin\PageMetaTagRepositoryEloquent as PageMetaTag;
 use Illuminate\Support\Facades\Auth;
 use PDF;
 use App\Models\TableList as Tablelist;
+use App\Repositories\Admin\ConfigRepositoryEloquent as Config;
+use App\Repositories\Customer\CustomerRepositoryEloquent as Customer;
 
 
 // For Page Builder
@@ -69,6 +71,8 @@ class FrontPageController extends Controller
     protected $pageMetaTagRepo;
     protected $pageBuiderPages;
     protected $pageBuilderPageTranslations;
+    protected $configRepo;
+    protected $customerRepo;
 
     function __construct(
         Page $pageRepo,
@@ -87,7 +91,9 @@ class FrontPageController extends Controller
         TableList $tablelist,
         PageMetaTag $pageMetaTagRepo,
         PageBuilderPages $pageBuiderPages,
-        PageBuilderPageTranslations $pageBuilderPageTranslations
+        PageBuilderPageTranslations $pageBuilderPageTranslations,
+        Config $configRepo,
+        Customer $customerRepo
     ) {
         $this->pageRepo = $pageRepo;
         $this->sectionRepo = $sectionRepo;
@@ -106,6 +112,8 @@ class FrontPageController extends Controller
         $this->pageMetaTagRepo = $pageMetaTagRepo;
         $this->pageBuiderPages = $pageBuiderPages;
         $this->pageBuilderPageTranslations = $pageBuilderPageTranslations;
+        $this->configRepo = $configRepo;
+        $this->customerRepo = $customerRepo;
     }
 
 
@@ -303,6 +311,7 @@ class FrontPageController extends Controller
              * start: Customer Cart Page
              */
             if ($currentUrl == "cart") {
+                // 1. Initial cart section
                 $data['brands'] = $this->brandRepo->all();
                 $data['isValidAuthentication'] = (Auth::guard('customer')->check() != null) ? true : false;
 
@@ -319,6 +328,32 @@ class FrontPageController extends Controller
                     '<meta name="twitter:description" content="Sell your used cell phones and electronics. Sell your iPhone, Samsung Galaxy, iPad, Smart Watches, Game Consoles and more for cash. We will pay you!" />'
                 ];
 
+                // 2. Checkout section
+                $is_auth = (Auth::guard('customer')->check() != null) ? true : false;
+                if ($is_auth) {
+                    $customer_id = Auth::guard('customer')->user()->id;
+                    $customer_data = $this->customerRepo->rawByWithField(['addresses'], 'id = ?', [$customer_id]);
+                    $data['fname'] = $customer_data['fname'];
+                    $data['lname'] = $customer_data['lname'];
+                    $data['email'] = $customer_data['email'];
+
+                    $has_address = count($customer_data['addresses']) > 0;
+                    if ($has_address) {
+                        $address = $customer_data['addresses'][0];
+                        $data['address1'] = $address['address1'];
+                        $data['address2'] = $address['address2'];
+                        $data['city'] = $address['city'];
+                        $data['state'] = $address['state'];
+                        $data['zip'] = $address['zip'];
+                        $data['phone'] = $address['phone'];
+                    }
+                }
+                $data['user'] = $is_auth;
+                $data['stateList'] = $this->stateRepo->selectlist('name', 'abbr');
+                $data['brands'] = $this->brandRepo->all();
+                $data['paymentList'] = $this->tablelist->payment_list;
+                $config = $this->configRepo->find(1);
+                $data['insurance_fee'] = $config->insurance_fee;
 
                 return view("front.cart.index", $data);
             }
@@ -578,9 +613,9 @@ class FrontPageController extends Controller
             $data['cartHtml'] = '<div class="row">
                                     <div class="col-md-12">
                                         <h5 class="mt-10">Your Items</h5>
+                                        <div class="">
                                             <div class="">
-                                                <div class="">
-                                                    <div class="container-fluid p-0">';
+                                                <div class="container-fluid p-0">';
             $subTotal = 0;
             foreach ($request->sessionCart as $key => $value) {
                 $device_type = '';
@@ -620,7 +655,14 @@ class FrontPageController extends Controller
                                                 <small class="d-block">Cash Offer</small> $' . number_format($value['amount'], 2) . '
                                             </div>
                                             <div align="center" class="valign-middle col-4 mt-3 col-md-2">
-                                                <label style="margin:-2px 0 0;display:block;" for="quant-' . $key . '"><small style="font-size:12.25px;">Quantity</small></label> <input type="number" name="quantity[]"  id="quant-' . $key . '" min="1" data-attr-id="' . $key . '" class="form-control cart-item-quantity"  style="width: 75px !important;" value="' . $value['quantity'] . '">
+                                                <label style="margin:-2px 0 0;display:block;" for="quant-' . $key . '"><small style="font-size:12.25px;">Quantity</small></label>
+                                                <div class="d-flex justify-content-center">
+                                                    <input type="number" name="quantity[]"  id="quant-' . $key . '" min="1" data-attr-id="' . $key . '" class="form-control cart-item-quantity text-center"  style="width: 60px !important;" value="' . $value['quantity'] . '">
+                                                    <div class="d-flex flex-column">
+                                                        <button class="step-up" data-attr-id="' . $key . '"  type="button"  style="height: 19px !important;border: none;line-height: 2px;border-bottom:1px solid gray;" >+</button>
+                                                        <button class="step-down" data-attr-id="' . $key . '" type="button"  style="font-size: 20px;height: 19px !important;border: none;line-height: 0px;">-</button>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div align="center" class="valign-middle font14 col-4 mt-3 col-md-2">
                                                 <small class="d-block">Subtotal</small> $' . number_format($itemSubTotal, 2) . '
@@ -631,12 +673,14 @@ class FrontPageController extends Controller
             $data['cartHtml'] .= '</div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>';
+                                        <div><a class="btn btn-primary w-100" href="/">Sell more devices</a></div>
+                                        </div>
+                                        </div>';
             $data['subTotal'] = '$' . number_format($subTotal, 2);
         }
         return $data;
     }
+    // <div><a class="d-lg-none btn btn-primary w-100" href="#sell-more-devices">Sell more devices</a></div>
 
 
     private function GenerateMetaTags($page_url)

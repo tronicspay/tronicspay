@@ -80,13 +80,13 @@
 							<h4 class="footer-subtitle">Follow us</h4>
 						</div>
 						<div class="top-margin social-column">
-							<a href="#" class="hvr-shrink">
+							<a href="https://www.facebook.com/TronicsPay/" class="hvr-shrink">
 								<img src="{{ url('assets/images/social/facebook.png') }}" class="social-icons" />
 							</a>
-							<a href="#" class="hvr-shrink">
+							<a href="https://twitter.com/tronicspay" class="hvr-shrink">
 								<img src="{{ url('assets/images/social/twitter.png') }}" class="social-icons" />
 							</a>
-							<a href="#" class="hvr-shrink">
+							<a href="https://www.instagram.com/tronicspay/" class="hvr-shrink">
 								<img src="{{ url('assets/images/social/instagram.png') }}" class="social-icons" />
 							</a>
 							<a href="#" class="hvr-shrink">
@@ -138,20 +138,44 @@
 					<div class="top-margin social-column  fontGray2-5 font14px">
 						Don't miss to subscribe to our new feeds, kindly fill the form below.
 						<br />
-						<form action="#">
 
-							<div class="input-group">
-								<div class="input-group-prepend">
-									<div class="input-group-text btn-warning" id="btnGroupAddon">
-										<i class="fab fa-telegram-plane fontWhite"></i>
+
+
+						<div id="mc_embed_signup">
+							<form action="https://gmail.us20.list-manage.com/subscribe/post?u=a7b99d655398a5f5fa4d589b1&amp;id=62d2caa63b" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+								<div id="mc_embed_signup_scroll">
+									<div class="input-group">
+
+										<!-- <div class="input-group-prepend">
+											<div class="input-group-text btn-warning" id="btnGroupAddon">
+												<i onclick="document.querySelector('#mc-embedded-subscribe').click()" class="fab fa-telegram-plane fontWhite"></i>
+
+											</div>
+										</div> -->
+
+										<div class="mc-field-group">
+											<input type="email" class="form-control" placeholder="Email Address" value="" name="EMAIL" class="required email" id="mce-EMAIL">
+										</div>
+										<div class="input-group-append">
+											<input type="submit" value="Subscribe" class="btn btn-warning text-white" name="subscribe" id="mc-embedded-subscribe">
+										</div>
+
+										<div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_a7b99d655398a5f5fa4d589b1_62d2caa63b" tabindex="-1" value=""></div>
+
+										<div id="mce-responses">
+											<div class="response" id="mce-error-response" style="display:none"></div>
+											<div class="response" id="mce-success-response" style="display:none"></div>
+										</div>
+
 									</div>
 								</div>
-								<input type="email" class="form-control" placeholder="Email Address" aria-label="Subscription" aria-describedby="btnGroupAddon">
-							</div>
+						</div>
 						</form>
 					</div>
+
 				</div>
 			</div>
+		</div>
 		</div>
 		<div class="container-fluid">
 			<div class="row no-gutters">
@@ -166,7 +190,7 @@
 							<div class="row">
 								<div class="col-xl-6 col-lg-4 text-center text-lg-left">
 									<div class="copyright-text fontWhite">
-										<p>Copyright &copy;All Rights Reserved</p>
+										<p>Copyright &copy; 2021 All Rights Reserved</p>
 									</div>
 								</div>
 								<div class="col-xl-6 col-lg-8 d-none d-lg-block text-right">

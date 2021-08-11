@@ -9,8 +9,15 @@ Route::group(['prefix' => 'customer'], function () {
     Route::get('auth/google/callback', [\App\Http\Controllers\CustomerAuth\RegisterController::class, 'returnFromGoogle']);
     Route::get('auth/google/login/redirect', [\App\Http\Controllers\CustomerAuth\LoginController::class, 'redirectToGoogle']);
 
+    Route::post('auth/facebook/redirect', [\App\Http\Controllers\CustomerAuth\RegisterController::class, 'redirectToFacebook']);
+    Route::get('auth/facebook/callback', [\App\Http\Controllers\CustomerAuth\RegisterController::class, 'returnFromFacebook']);
+    Route::get('auth/facebook/login/redirect', [\App\Http\Controllers\CustomerAuth\LoginController::class, 'redirectToFacebook']);
+
     Route::get('auth/register', [\App\Http\Controllers\CustomerAuth\RegisterController::class, 'showRegistrationForm']);
     Route::get('auth/register-google', [\App\Http\Controllers\CustomerAuth\RegisterController::class, 'showGoogleRegistrationForm']);
+    Route::get('auth/register-facebook', [\App\Http\Controllers\CustomerAuth\RegisterController::class, 'showFacebookRegistrationForm']);
+
+
     Route::get('auth/login', [\App\Http\Controllers\CustomerAuth\LoginController::class, 'showLoginForm'])->name('member.login');
     Route::post('auth/register', [\App\Http\Controllers\CustomerAuth\RegisterController::class, 'create']);
     Route::patch('auth/register', [\App\Http\Controllers\CustomerAuth\RegisterController::class, 'CheckExistingEmail']);

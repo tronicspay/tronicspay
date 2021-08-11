@@ -34,13 +34,16 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth:web']], function () {
     Route::get('customers', [\App\Http\Controllers\Admin\PageViewerController::class, 'Customers']);
 
 
-    Route::prefix('orders')->name('orders.')->group(function () {
-        Route::patch('/bulk-order-update/{type?}', [\App\Http\Controllers\Admin\OrderController::class, 'bulk_update'])->name('bulk_update');
-    });
+    // Route::prefix('orders')->name('orders.')->group(function () {
+    //     Route::patch('/bulk-order-update', [\App\Http\Controllers\Admin\OrderController::class, 'bulk_update'])->name('bulk_update');
+    // });
+    Route::post('/bulk-order-update', ['as' => 'orders.bulk_update', 'uses' => 'App\Http\Controllers\Admin\OrderController@bulk_update']);
 
     Route::get('orders/{hashedId}/generatePDF', [\App\Http\Controllers\Admin\OrderController::class, 'generatePDF']);
     Route::get('orders/{hashedId}/orderItem', [\App\Http\Controllers\Admin\OrderController::class, 'getOrderItem']);
+    Route::get('orders/shipping-status/{shippingId}', [\App\Http\Controllers\Admin\OrderController::class, 'get_shipping_status']);
     Route::delete('orders/{hashedId}/delete', [\App\Http\Controllers\Admin\OrderController::class, 'delete']);
+    Route::delete('orders/deleteMany', [\App\Http\Controllers\Admin\OrderController::class, 'deleteMany']);
     Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class);
 
     Route::group(['prefix' => 'pagebuilder'], function () {
@@ -173,6 +176,7 @@ Route::group(['prefix' => 'api'], function () {
             Route::get('{hashedId}/paymentsuccess', [\App\Http\Controllers\Api\ApiController::class, 'OrderPaymentSuccess']);
             Route::delete('{hashedId}/orderitem', [\App\Http\Controllers\Api\ApiController::class, 'DeleteOrderItem']);
             Route::put('{hashedId}/status', [\App\Http\Controllers\Api\ApiController::class, 'UpdateOrderStatus']);
+            Route::put('{hashedId}/reduction', [\App\Http\Controllers\Api\ApiController::class, 'UpdateOrderReduction']);
             Route::post('notes', ['as' => 'api.orders.notes', 'uses' => 'App\Http\Controllers\Api\ApiController@StoreOrderNotes']);
             Route::get('{hashedId}/notes', ['as' => 'api.orders.notes', 'uses' => 'App\Http\Controllers\Api\ApiController@GetOrderNotes']);
             Route::put('{hashedId}/notes', ['as' => 'api.orders.notes', 'uses' => 'App\Http\Controllers\Api\ApiController@UpdateOrderNote']);
@@ -231,10 +235,8 @@ Route::group(['prefix' => 'api'], function () {
 
 
         Route::post('admin/customers', [App\Http\Controllers\Api\DatatableController::class, 'GetCustomers']);
+        Route::delete('admin/customers/delete', [App\Http\Controllers\Api\ApiController::class, 'DeleteCustomers']);
         Route::patch('admin/customers/changepassword', [\App\Http\Controllers\Customer\ApiController::class, 'ChangePassword']);
-        Route::get('admin/customers/info/{hashedId}', [\App\Http\Controllers\Customer\ApiController::class, 'GetCustomerInfo']);
-        Route::delete('admin/customers/delete', [\App\Http\Controllers\Customer\ApiController::class, 'DeleteCustomers']);
-        Route::patch('admin/customers/update', [\App\Http\Controllers\Customer\ApiController::class, 'UpdateCustomerInfo']);
 
         Route::get('admin/payment', [App\Http\Controllers\Admin\PaymentPaypalController::class, 'Payment']);
         Route::get('admin/payment/status', [App\Http\Controllers\Admin\PaymentPaypalController::class, 'GetPaymentStatus']);

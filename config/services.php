@@ -33,7 +33,13 @@ return [
     'google' => [
         'client_id' => env('GOOGLE_OAUTH_CLIENT_ID'),
         'client_secret' => env('GOOGLE_OAUTH_CLIENT_SECRET'),
-        'redirect' => 'http://tronicspay.tronicspay.com/customer/auth/google/callback',
+        'redirect' => 'https://tronicspay.com/customer/auth/google/callback',
+    ],
+
+    'facebook' => [
+        'client_id' => env('FACEBOOK_OAUTH_CLIENT_ID'),
+        'client_secret' => env('FACEBOOK_OAUTH_CLIENT_SECRET'),
+        'redirect' => 'https://tronicspay.com/customer/auth/facebook/callback',
     ],
 
 ];

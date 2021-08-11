@@ -159,6 +159,13 @@ class RegisterController extends Controller
         return view('customer.register_google', $data);
     }
 
+    public function showFacebookRegistrationForm()
+    {
+        $data['stateList'] = $this->stateRepo->selectlist('name', 'abbr');
+        $data['cartcount'] = Cart::count();
+        return view('customer.register_facebook', $data);
+    }
+
     private function CheckExistingEmail($email)
     {
         $checker = $this->customerRepo->rawByWithField(['bill'], 'email = ?', [$email]);
@@ -182,14 +189,26 @@ class RegisterController extends Controller
             ->redirect();
     }
 
+    public function redirectToFacebook(Request $request)
+    {
+        if (
+            $this->validateAddressData($request)
+        ) {
+            return;
+        }
+        $this->sessionStoreAddressData($request);
+
+        return Socialite::driver('facebook')
+            ->redirect();
+    }
+
     public function returnFromGoogle(Request $request)
     {
-        $user = Socialite::driver('google')->user();
+        $user = Socialite::driver('google')->stateless()->user();
 
         if (!$user) return;
 
         if ($this->CheckExistingEmail($user->email) == false) {
-            // return redirect('customer/auth/register-google')->with('error', 'Email Address has been already used!');
 
             if ($request['cart']) {
                 // TODO ttt
@@ -207,6 +226,42 @@ class RegisterController extends Controller
         }
 
         $customer = $this->createOAuthCustomer($request, $user, 'google');
+
+        Auth::guard('customer')->login($customer);
+        if (!Auth::guard('customer')->check()) {
+            return redirect()->to('customer/auth/login');
+        }
+        if ($request['cart']) {
+            // TODO ttt
+            return redirect()->to('products/checkout');
+        }
+        return redirect()->to('customer/dashboard');
+    }
+
+    public function returnFromFacebook(Request $request)
+    {
+        $user = Socialite::driver('facebook')->stateless()->user();
+
+        if (!$user) return;
+
+        if ($this->CheckExistingEmail($user->email) == false) {
+
+            if ($request['cart']) {
+                // TODO ttt
+                return redirect()->back();
+            }
+
+            $customer = Customer::where('email', $user->email)->first();
+
+            if ($customer->provider !== 'facebook') {
+                return redirect('customer/auth/register-facebook')->with('error', 'Email Address has been already used!');
+            }
+
+            Auth::guard('customer')->login($customer);
+            return redirect()->to('customer/dashboard');
+        }
+
+        $customer = $this->createOAuthCustomer($request, $user, 'facebook');
 
         Auth::guard('customer')->login($customer);
         if (!Auth::guard('customer')->check()) {
@@ -250,15 +305,33 @@ class RegisterController extends Controller
     private function createOAuthCustomer(Request $request, $user, $provider)
     {
 
+
+        $fname = "";
+        $lname = "";
+
+        if ($provider === "google") {
+            $fname = $user->user['given_name'];
+            $lname = $user->user['family_name'];
+        } else {
+            $parts = explode(" ", $user['name']);
+            if (count($parts) === 1) {
+                $fname = $parts[0];
+                $lname = $parts[0];
+            } else {
+                $fname = implode(" ", array_slice($parts, 0, -1));
+                $lname = array_slice($parts, -1)[0];
+            }
+            // die(($fname . $lname));
+        }
+
         $customer = Customer::create([
-            'fname' => $user->user['given_name'],
-            'lname' => $user->user['family_name'],
+            'fname' => $fname,
+            'lname' => $lname,
             'email' => $user->email,
             'username' => '',
             'authpw' => "",
             'verification_code' => app('App\Http\Controllers\GlobalFunctionController')->verificationCode(),
             'status' => 'inactive',
-            // password omitted, needs a new field for account provider
             'provider' => $provider,
         ]);
 

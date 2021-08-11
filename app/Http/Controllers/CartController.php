@@ -106,10 +106,7 @@ class CartController extends Controller
     public function cartCheckout()
     {
         $is_auth = (Auth::guard('customer')->check() != null) ? true : false;
-
         if ($is_auth) {
-            $customer = Auth::guard('customer')->user();
-
             $customer_id = Auth::guard('customer')->user()->id;
             $customer_data = $this->customerRepo->rawByWithField(['addresses'], 'id = ?', [$customer_id]);
             $data['fname'] = $customer_data['fname'];
@@ -126,20 +123,11 @@ class CartController extends Controller
                 $data['zip'] = $address['zip'];
                 $data['phone'] = $address['phone'];
             }
-
-            // return "<pre>" . print_r($data, true) . "</pre>";
-            // $request['payment_method'] = $customer['payment_method'];
-            // $request['account_username'] = $customer['account_username'];
-            // $request['account_name'] = $customer['account_name'];
-            // $request['account_number'] = $customer['account_number'];
-            // $request['bank'] = $customer['bank'];
-
         }
         $data['user'] = $is_auth;
         $data['stateList'] = $this->stateRepo->selectlist('name', 'abbr');
         $data['brands'] = $this->brandRepo->all();
         $data['paymentList'] = $this->tablelist->payment_list;
-        // TODO
         $config = $this->configRepo->find(1);
         $data['insurance_fee'] = $config->insurance_fee;
         return view("front.cart.checkout", $data);
