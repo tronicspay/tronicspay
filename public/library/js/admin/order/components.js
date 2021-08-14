@@ -315,6 +315,7 @@ function AddOrderNotes (hashedId)
 
 function OpenOrderNotes (hashedId) 
 {
+
     OpenPreloader ('modal-order-notes-list-preloader');
     $('#modal-order-notes-list').html('');
     $.ajax({
@@ -327,21 +328,22 @@ function OpenOrderNotes (hashedId)
                 $.each(response.model, function( index, value ) {
 
                     var displayNotes = '<div id="modal-order-notes-div-'+value.hashedid+'" class="card" style="border: 1px  solid #dee2e6;">'+
-                            '<div class="card-header" style="background: #f8f9fa; color: #495057;">'+
-                                '<div class="card-tools">'+
-                                    '<a href="javascript:void(0);" class="btn btn-sm btn-tool font12px" onClick="modalEditNotes(\''+value.hashedid+'\')">'+
-                                        '<i class="fas fa-edit"></i>'+
-                                    '</a>'+
-                                    '<a href="javascript:void(0);" class="btn btn-sm btn-tool font12px" onClick="modalDeleteNotes(\''+value.hashedid+'\')">'+
-                                        '<i class="fas fa-trash"></i>'+
-                                    '</a>'+
-                                '</div>'+
+                            '<div class="card-header" style="background:'+ (value.customer_id ? '#e3f2c0' : '#f8f9fa') +';color: #495057;">'+
+                                '<div>'+(value.customer_id ? value.order.customer.fullname: "TronicsPay Support")+'</div>'+
+                                // '<div class="card-tools">'+
+                                //     '<a href="javascript:void(0);" class="btn btn-sm btn-tool font12px" onClick="modalEditNotes(\''+value.hashedid+'\')">'+
+                                //         '<i class="fas fa-edit"></i>'+
+                                //     '</a>'+
+                                //     '<a href="javascript:void(0);" class="btn btn-sm btn-tool font12px" onClick="modalDeleteNotes(\''+value.hashedid+'\')">'+
+                                //         '<i class="fas fa-trash"></i>'+
+                                //     '</a>'+
+                                // '</div>'+
                             '</div>'+
-                            '<div class="card-body" style="background: #f8f9fa; color: #495057;">'+
-                                '<div id="modal-order-notes-'+value.hashedid+'">'+value.notes+'</div>'+
+                            '<div class="card-body" style="padding-bottom:10px; background: #f8f9fa; color: #495057;">'+
+                                '<div style="margin-bottom: 15px;" id="modal-order-notes-'+value.hashedid+'">'+value.notes+'</div>'+
                                 '<div id="modal-order-notes-edit-'+value.hashedid+'"></div>'+
                                 '<div id="modal-order-notes-date-'+value.hashedid+'" class="pull-right font12px">'+
-                                    '<b><i>Date Posted: </i></b> <i class="fas fa-calendar"></i> <i>'+value.display_created_at+'</i>'+
+                                    '<i class="fas fa-calendar"></i><span style="margin: 0 5px;"><b>Date Posted:</b></span><span>'+value.display_created_at+'</span>'+
                                 '</div>'+
                             '</div>'+
                             '<div class="modal-order-notes-preloader-'+value.hashedid+'"></div>'+

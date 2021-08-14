@@ -250,3 +250,4 @@ require __DIR__ . '/cronjobs.php';
 require __DIR__ . '/customer.php';
 require __DIR__ . '/demo.php';
 require __DIR__ . '/frontpage.php';
+require __DIR__ . '/webhooks.php';

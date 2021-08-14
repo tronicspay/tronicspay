@@ -685,17 +685,25 @@ class DeviceController extends Controller
             }
         }
 
-        $phone_number = "";
-        if ($request->get('phone') != null) {
-            $phone_number = easypost_phone_format($request->get('phone'));
-            if (strlen($phone_number) != 10) {
-                return response()->json([
-                    "status"    => 400,
-                    "message"   => "phone number input should containt a 10 digit number"
-                ]);
-            }
+        try {
+            phone($request['phone'], 'US')->formatE164();
+        } catch (\Exception $e) {
+            return response()->json([
+                "status"    => 400,
+                "message"   => "Invalid phone number"
+            ]);
         }
 
+        // $phone_number = "";
+        // if ($request->get('phone') != null) {
+        //     $phone_number = easypost_phone_format($request->get('phone'));
+        //     if (strlen($phone_number) != 10) {
+        //         return response()->json([
+        //             "status"    => 400,
+        //             "message"   => "phone number input should containt a 10 digit number"
+        //         ]);
+        //     }
+        // }
 
         $mobiles = 0;
         $others = 0;
@@ -750,7 +758,7 @@ class DeviceController extends Controller
                     "city"    => $request['city'],
                     "state"   => $request['state_id'],
                     "zip"     => $request['zip_code'],
-                    "phone"   => $phone_number,
+                    "phone"   => phone($request['phone'], 'US')->formatE164(),
                 ]);
             } catch (\Exception $e) {
                 // return response()->json([
@@ -1038,6 +1046,17 @@ class DeviceController extends Controller
 
             $response['message'] = $htmlResult;
 
+            if (app('App\Http\Controllers\GlobalFunctionController')->checkSMSFeatureIfActive()) {
+
+                $message = 'Order number: ' . $order->order_no . '
+Shipping label: ' . $shipping_label_url . '
+Tracking number: ' . $order->tracking_code . '
+Tracking link: ' . $order->shipping_tracker . '
+
+Thank you for choosing TronicPay.';
+
+                app('App\Http\Controllers\GlobalFunctionController')->doSmsSending($order->customer->bill->phone, $message);
+            }
 
 
             Mailer::sendEmail($email, $subject, $content);

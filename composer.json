@@ -24,6 +24,7 @@
         "laravelcollective/html": "^6.2",
         "phpmailer/phpmailer": "^6.2",
         "proengsoft/laravel-jsvalidation": "^4.4",
+        "propaganistas/laravel-phone": "^4.3",
         "srmklive/paypal": "^3.0",
         "twilio/sdk": "^6.28",
         "vinkla/hashids": "^9.1",

@@ -261,9 +261,14 @@ class ApiController extends Controller
     public function UpdateOrderStatus($hashedId, Request $request)
     {
         $id = app('App\Http\Controllers\GlobalFunctionController')->decodeHashid($hashedId);
-        $status_package_delivered = $this->statusRepo->rawByField("name = ?", ['Package delivered']);
-        if ($request['status_id'] == $status_package_delivered->id) {
-            $this->doSmsSending($request['sms_template_id'], $id);
+
+        //$status_package_delivered = $this->statusRepo->rawByField("name = ?", ['Package delivered']);
+
+        if ($request['sms_template_id']) {
+            $sms_template = $this->smsTemplateRepo->find($id);
+            if ($sms_template && $sms_template->status == 'Active') {
+                $this->doSmsSending($request['sms_template_id'], $id);
+            }
         }
 
         $makeRequest = ['status_id' => $request['status_id']];
@@ -819,7 +824,8 @@ class ApiController extends Controller
     {
         $id = app('App\Http\Controllers\GlobalFunctionController')->decodeHashid($hashedId);
 
-        $response['model'] = $this->orderNoteRepo->findByFieldAll('order_id', $id);
+        //$response['model'] = $this->orderNoteRepo->findByFieldAll('order_id', $id);
+        $response['model'] = $this->orderNoteRepo->rawByWithFieldAll(['order.customer'], 'order_id = ?', [$id]);
         $response['status'] = 200;
         return response()->json($response);
         return $hashedId;
@@ -835,9 +841,13 @@ class ApiController extends Controller
         ];
         $this->orderNoteRepo->create($makeRequest);
         $phone = $order['customer']['bill']['phone'];
-        $message = 'Transaction No: ' . $order['order_no'] . ' has new notes made by TronicsPay.
+        $message = 'Order: ' . $order['order_no'] . ' has new notes made by TronicsPay.
         
-' . $request['notes'];
+' . $request['notes'] . '
+
+To reply, type:
+#support ' . $order['order_no'] . ' followed by your message';
+
         app('App\Http\Controllers\GlobalFunctionController')->doSmsSending($phone, $message);
         $response['status'] = 200;
         $response['message'] = 'Note has been successfully posted';
@@ -897,6 +907,7 @@ class ApiController extends Controller
     {
         $order = $this->orderRepo->rawByWithField(['customer', 'status_details'], "id = ?", [$order_id]);
         $string = $str;
+
         $result = str_replace(
             [
                 '{customer_name}',
@@ -905,15 +916,16 @@ class ApiController extends Controller
                 '{order_shipping_label}',
                 '{order_tracking_number}',
                 '{order_transaction_id}',
-                '{order_status}'
+                '{order_no}'
             ],
             [
                 $order['customer']['fullname'],
                 $order['customer']['email'],
                 app('App\Http\Controllers\GlobalFunctionController')->decrypt($order['customer']['authtoken']),
-                $order['shipping_label'],
+                url('order/' . $order['hashedId'] . '/shippinglabel'),
                 $order['tracking_code'],
                 $order['status_details']['name'],
+                $order['order_no'],
             ],
             $string
         );
@@ -923,7 +935,6 @@ class ApiController extends Controller
     private function doSmsSending($sms_template_id, $order_id)
     {
         if ($sms_template_id == 0) return false;
-
 
         if (app('App\Http\Controllers\GlobalFunctionController')->checkSMSFeatureIfActive() == false) return false;
 
@@ -935,6 +946,11 @@ class ApiController extends Controller
         $message = $this->replaceSMSPlaceHolder($sms_template['content'], $order_id);
 
         $order = $this->orderRepo->rawByWithField(['customer', 'status_details'], "id = ?", [$order_id]);
+
+        $message .= '
+
+To reply, type:
+#support ' . $order->order_no . ' followed by your message';
 
         return app('App\Http\Controllers\GlobalFunctionController')->doSmsSending($order['customer']['bill']['phone'], $message);
     }
