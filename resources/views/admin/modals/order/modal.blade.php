@@ -13,9 +13,9 @@
                                 <select class="form-control" name="product_id" id="order-product-device">
                                     <option value="0">Please Select Product</option>
                                     @if(isset($products) && count($products) >= 1)
-                                        @foreach($products as $pKey => $pVal)
-                                            <option value="{{ $pVal['id'] }}">{{ $pVal['brand']['name'].' '.$pVal['model'].' ('.$pVal['color'].')' }}</option>
-                                        @endforeach
+                                    @foreach($products as $pKey => $pVal)
+                                    <option value="{{ $pVal['id'] }}">{{ $pVal['brand']['name'].' '.$pVal['model'].' ('.$pVal['color'].')' }}</option>
+                                    @endforeach
                                     @endif
                                 </select>
                             </div>
@@ -41,7 +41,7 @@
                                     <option value="1">Excellent</option>
                                     <option value="2">Good</option>
                                     <option value="3">Fair</option>
-                                    <option value="4">Poor</option>
+                                    <option value="0">Poor</option>
                                 </select>
                             </div>
                         </div>
@@ -54,7 +54,7 @@
                             </div>
                         </div>
                     </div>
-                </div>  
+                </div>
                 <div class="modal-footer">
                     <div class="float-right">
                         <input type="hidden" id="isBuyForEdit" value="">
@@ -62,8 +62,8 @@
                         <input type="hidden" name="sku" class="form-control form-control-sm" id="sku" value="{{ isset($product->sku) ? $product->sku : '' }}">
                         <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary btn-sm">Save changes</button>
-                    </div> 
-                </div>   
+                    </div>
+                </div>
             </form>
         </div>
     </div>

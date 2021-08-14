@@ -23,13 +23,6 @@ use App\Repositories\Admin\SettingsStatusEloquentRepository as SettingsStatus;
 use App\Repositories\Customer\CustomerRepositoryEloquent as Customer;
 use App\Models\TableList as Tablelist;
 
-// For Plivio
-require __DIR__ . '/../../../../vendor/autoload.php';
-use Plivo\RestClient;
-use Plivo\Exceptions\PlivoAuthenticationException;
-use Plivo\Exceptions\PlivoRestException;
-
-
 class ApiController extends Controller
 {
     protected $brandRepo;
@@ -47,21 +40,20 @@ class ApiController extends Controller
     protected $tablelist;
 
     function __construct(
-                        Brand $brandRepo, 
-                        Product $productRepo, 
-                        ProductPhoto $productPhotoRepo, 
-                        Config $configRepo, 
-                        Network $networkRepo, 
-                        ProductNetwork $productNetworkRepo, 
-                        ProductStorage $productStorageRepo, 
-                        CustomerSell $customerSellRepo, 
-                        Order $orderRepo, 
-                        OrderItem $orderItemRepo, 
-                        SettingsStatus $settingsStatusRepo, 
-                        Customer $customerRepo, 
-                        TableList $tablelist
-                        )
-    {
+        Brand $brandRepo,
+        Product $productRepo,
+        ProductPhoto $productPhotoRepo,
+        Config $configRepo,
+        Network $networkRepo,
+        ProductNetwork $productNetworkRepo,
+        ProductStorage $productStorageRepo,
+        CustomerSell $customerSellRepo,
+        Order $orderRepo,
+        OrderItem $orderItemRepo,
+        SettingsStatus $settingsStatusRepo,
+        Customer $customerRepo,
+        TableList $tablelist
+    ) {
         $this->brandRepo = $brandRepo;
         $this->productRepo = $productRepo;
         $this->productPhotoRepo = $productPhotoRepo;
@@ -76,8 +68,8 @@ class ApiController extends Controller
         $this->customerRepo = $customerRepo;
         $this->tablelist = $tablelist;
     }
-    
-    public function ChangePassword (Request $request) 
+
+    public function ChangePassword(Request $request)
     {
         if ($request['id'] == '') {
             $response['status'] = 400;
@@ -98,7 +90,7 @@ class ApiController extends Controller
             $id = app('App\Http\Controllers\GlobalFunctionController')->decodeHashid($request['id']);
             $customer = $this->customerRepo->find($id);
             $makeRequest = [
-                'password' => bcrypt($request['password']), 
+                'password' => bcrypt($request['password']),
                 'authpw' => $request['password']
             ];
             $this->customerRepo->update($makeRequest, $id);
@@ -110,7 +102,8 @@ class ApiController extends Controller
     }
 
 
-    public function GetCustomerInfo ($hashedId) {
+    public function GetCustomerInfo($hashedId)
+    {
         $id = app('App\Http\Controllers\GlobalFunctionController')->decodeHashid($hashedId);
 
         $customer = $this->customerRepo->findWith($id, ['bill']);
@@ -118,7 +111,8 @@ class ApiController extends Controller
         return response()->json($customer);
     }
 
-    public function UpdateCustomerInfo (Request $request) {
+    public function UpdateCustomerInfo(Request $request)
+    {
         $id = app('App\Http\Controllers\GlobalFunctionController')->decodeHashid($request['customer_id']);
 
         $this->customerRepo->update([
@@ -137,54 +131,52 @@ class ApiController extends Controller
         return response()->json(['status' => 'OK']);
     }
 
-    public function DeleteCustomers (Request $request) 
+    public function DeleteCustomers(Request $request)
     {
         $ids = $request['ids'];
-        foreach($ids as $id) {
+        foreach ($ids as $id) {
             $this->customerRepo->delete($id);
         }
         return response()->json(['status' => 'ok']);
     }
 
 
-    public function GetOrderItem ($hashedId) 
+    public function GetOrderItem($hashedId)
     {
         $id = app('App\Http\Controllers\GlobalFunctionController')->decodeHashid($hashedId);
         $data['customerSell'] = $this->orderItemRepo->rawByWithField(['product_storage'], 'id = ?', [$id]);
         $data['productDetails'] = $this->productRepo->rawByWithField(['networks.network'], 'id = ?', [$data['customerSell']['product_id']]);
         $data['productDetails']['storages'] = $data['productDetails']->storagesForBuying()->get();
         return $data;
-    } 
+    }
 
-    public function Verification (Request $request) 
+    public function Verification(Request $request)
     {
-        if ($request['input1'] == '' || $request['input2'] == '' || $request['input3'] == '' || $request['input4'] == '') 
-        {
+        if ($request['input1'] == '' || $request['input2'] == '' || $request['input3'] == '' || $request['input4'] == '') {
             $response['status'] = 400;
             $response['message'] = "Please enter valid verification code";
             return response()->json($response);
         }
 
-        $merge_code = $request['input1'].''.$request['input2'].''.$request['input3'].''.$request['input4']; 
+        $merge_code = $request['input1'] . '' . $request['input2'] . '' . $request['input3'] . '' . $request['input4'];
         // return Auth::guard('customer')->user()->verification_code .' - '. $merge_code;
-        if (Auth::guard('customer')->user()->verification_code != $merge_code) 
-        {
+        if (Auth::guard('customer')->user()->verification_code != $merge_code) {
             $response['status'] = 400;
             $response['message'] = "Verification code not matched";
-            return response()->json($response);  
+            return response()->json($response);
         }
-        
+
         $makeRequest = [
-            'status' => 'Active', 
+            'status' => 'Active',
             'is_verified' => 1
         ];
         $this->customerRepo->update($makeRequest, Auth::guard('customer')->user()->id);
         $response['status'] = 200;
         $response['message'] = "Account verified";
-        return response()->json($response);  
+        return response()->json($response);
     }
 
-    public function ResendVerification () 
+    public function ResendVerification()
     {
         $id = Auth::guard('customer')->user()->id;
         $makeRequest = [
@@ -200,18 +192,14 @@ class ApiController extends Controller
             $response['status'] = 400;
             $response['message'] = "Failed to send verifcation code";
         }
-        return response()->json($response);  
+        return response()->json($response);
     }
-    
-    private function doSMSResendVerification($request, $phone) 
-    {   
+
+    private function doSMSResendVerification($request, $phone)
+    {
         if (app('App\Http\Controllers\GlobalFunctionController')->checkSMSFeatureIfActive() == false) return false;
 
-        $plivo_credentials = $this->tablelist->plivo_client_credentials;
-
-        $client = new RestClient($plivo_credentials['auth_id'], $plivo_credentials['auth_token']); 
-
-        $message = 'Your new verification code is '.$request['verification_code'];
+        $message = 'Your new verification code is ' . $request['verification_code'];
 
         return app('App\Http\Controllers\GlobalFunctionController')->doSmsSending($phone, $message);
     }

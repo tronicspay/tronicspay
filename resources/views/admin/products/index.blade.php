@@ -113,6 +113,7 @@
         <?php } ?>
 
         productTable = $('#product-table').DataTable({
+            searchDelay: 1000,
             processing: true,
             serverSide: true,
             "pagingType": "input",
@@ -176,14 +177,14 @@
                 {
                     data: 'dateUpdated',
                     name: 'dateUpdated',
-                    searchable: true,
+                    searchable: false,
                     orderable: true,
                     width: '4%'
                 },
                 {
                     data: 'created_at',
                     name: 'created_at',
-                    searchable: true,
+                    searchable: false,
                     orderable: true,
                     width: '4%'
                 },
@@ -196,6 +197,7 @@
                     className: "text-center"
                 },
             ],
+
         });
 
         // $('#chk-buying').change(function(){

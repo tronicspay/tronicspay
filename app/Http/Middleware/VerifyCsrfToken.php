@@ -15,7 +15,8 @@ class VerifyCsrfToken extends Middleware
         '/products/sell/payment-method',
         '/device',
         '/api/customer/verification',
-        '/api/customer/verification/resend'
+        '/api/customer/verification/resend',
+        '/webhooks/twilio'
         //
         // 'admin/pagebuilder/{id}/build'
     ];

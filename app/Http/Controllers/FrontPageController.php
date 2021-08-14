@@ -22,7 +22,8 @@ use App\Repositories\Admin\PageMetaTagRepositoryEloquent as PageMetaTag;
 use Illuminate\Support\Facades\Auth;
 use PDF;
 use App\Models\TableList as Tablelist;
-
+use App\Repositories\Admin\ConfigRepositoryEloquent as Config;
+use App\Repositories\Customer\CustomerRepositoryEloquent as Customer;
 
 // For Page Builder
 use PHPageBuilder\PHPageBuilder;
@@ -33,19 +34,6 @@ use PHPageBuilder\Repositories\PageTranslationRepository;
 
 use App\Models\Admin\PageBuilderPages;
 use App\Models\Admin\PageBuilderPageTranslations;
-
-
-
-// For Twilio
-// require __DIR__ . '/../../../vendor/twilio/sdk/src/Twilio/autoload.php';
-// use Twilio\Rest\Client;
-
-// For Plivio
-require __DIR__ . '/../../../vendor/autoload.php';
-
-use Plivo\RestClient;
-use Plivo\Exceptions\PlivoAuthenticationException;
-use Plivo\Exceptions\PlivoRestException;
 
 use Illuminate\Routing\UrlGenerator;
 use stdClass;
@@ -69,6 +57,8 @@ class FrontPageController extends Controller
     protected $pageMetaTagRepo;
     protected $pageBuiderPages;
     protected $pageBuilderPageTranslations;
+    protected $configRepo;
+    protected $customerRepo;
 
     function __construct(
         Page $pageRepo,
@@ -87,7 +77,9 @@ class FrontPageController extends Controller
         TableList $tablelist,
         PageMetaTag $pageMetaTagRepo,
         PageBuilderPages $pageBuiderPages,
-        PageBuilderPageTranslations $pageBuilderPageTranslations
+        PageBuilderPageTranslations $pageBuilderPageTranslations,
+        Config $configRepo,
+        Customer $customerRepo
     ) {
         $this->pageRepo = $pageRepo;
         $this->sectionRepo = $sectionRepo;
@@ -106,6 +98,8 @@ class FrontPageController extends Controller
         $this->pageMetaTagRepo = $pageMetaTagRepo;
         $this->pageBuiderPages = $pageBuiderPages;
         $this->pageBuilderPageTranslations = $pageBuilderPageTranslations;
+        $this->configRepo = $configRepo;
+        $this->customerRepo = $customerRepo;
     }
 
 
@@ -303,6 +297,7 @@ class FrontPageController extends Controller
              * start: Customer Cart Page
              */
             if ($currentUrl == "cart") {
+                // 1. Initial cart section
                 $data['brands'] = $this->brandRepo->all();
                 $data['isValidAuthentication'] = (Auth::guard('customer')->check() != null) ? true : false;
 
@@ -319,6 +314,32 @@ class FrontPageController extends Controller
                     '<meta name="twitter:description" content="Sell your used cell phones and electronics. Sell your iPhone, Samsung Galaxy, iPad, Smart Watches, Game Consoles and more for cash. We will pay you!" />'
                 ];
 
+                // 2. Checkout section
+                $is_auth = (Auth::guard('customer')->check() != null) ? true : false;
+                if ($is_auth) {
+                    $customer_id = Auth::guard('customer')->user()->id;
+                    $customer_data = $this->customerRepo->rawByWithField(['addresses'], 'id = ?', [$customer_id]);
+                    $data['fname'] = $customer_data['fname'];
+                    $data['lname'] = $customer_data['lname'];
+                    $data['email'] = $customer_data['email'];
+
+                    $has_address = count($customer_data['addresses']) > 0;
+                    if ($has_address) {
+                        $address = $customer_data['addresses'][0];
+                        $data['address1'] = $address['address1'];
+                        $data['address2'] = $address['address2'];
+                        $data['city'] = $address['city'];
+                        $data['state'] = $address['state'];
+                        $data['zip'] = $address['zip'];
+                        $data['phone'] = $address['phone'];
+                    }
+                }
+                $data['user'] = $is_auth;
+                $data['stateList'] = $this->stateRepo->selectlist('name', 'abbr');
+                $data['brands'] = $this->brandRepo->all();
+                $data['paymentList'] = $this->tablelist->payment_list;
+                $config = $this->configRepo->find(1);
+                $data['insurance_fee'] = $config->insurance_fee;
 
                 return view("front.cart.index", $data);
             }
@@ -578,9 +599,9 @@ class FrontPageController extends Controller
             $data['cartHtml'] = '<div class="row">
                                     <div class="col-md-12">
                                         <h5 class="mt-10">Your Items</h5>
+                                        <div class="">
                                             <div class="">
-                                                <div class="">
-                                                    <div class="container-fluid p-0">';
+                                                <div class="container-fluid p-0">';
             $subTotal = 0;
             foreach ($request->sessionCart as $key => $value) {
                 $device_type = '';
@@ -620,7 +641,14 @@ class FrontPageController extends Controller
                                                 <small class="d-block">Cash Offer</small> $' . number_format($value['amount'], 2) . '
                                             </div>
                                             <div align="center" class="valign-middle col-4 mt-3 col-md-2">
-                                                <label style="margin:-2px 0 0;display:block;" for="quant-' . $key . '"><small style="font-size:12.25px;">Quantity</small></label> <input type="number" name="quantity[]"  id="quant-' . $key . '" min="1" data-attr-id="' . $key . '" class="form-control cart-item-quantity"  style="width: 75px !important;" value="' . $value['quantity'] . '">
+                                                <label style="margin:-2px 0 0;display:block;" for="quant-' . $key . '"><small style="font-size:12.25px;">Quantity</small></label>
+                                                <div class="d-flex justify-content-center">
+                                                    <input type="number" name="quantity[]"  id="quant-' . $key . '" min="1" data-attr-id="' . $key . '" class="form-control cart-item-quantity text-center"  style="width: 60px !important;" value="' . $value['quantity'] . '">
+                                                    <div class="d-flex flex-column">
+                                                        <button class="step-up" data-attr-id="' . $key . '"  type="button"  style="height: 19px !important;border: none;line-height: 2px;border-bottom:1px solid gray;" >+</button>
+                                                        <button class="step-down" data-attr-id="' . $key . '" type="button"  style="font-size: 20px;height: 19px !important;border: none;line-height: 0px;">-</button>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div align="center" class="valign-middle font14 col-4 mt-3 col-md-2">
                                                 <small class="d-block">Subtotal</small> $' . number_format($itemSubTotal, 2) . '
@@ -631,12 +659,14 @@ class FrontPageController extends Controller
             $data['cartHtml'] .= '</div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>';
+                                        <div><a class="btn btn-primary w-100" href="/">Sell more devices</a></div>
+                                        </div>
+                                        </div>';
             $data['subTotal'] = '$' . number_format($subTotal, 2);
         }
         return $data;
     }
+    // <div><a class="d-lg-none btn btn-primary w-100" href="#sell-more-devices">Sell more devices</a></div>
 
 
     private function GenerateMetaTags($page_url)
@@ -701,304 +731,5 @@ class FrontPageController extends Controller
         $html = str_replace($openingHtmlTag, '', $pageRenderer->render());
         $html = str_replace($closingHtmlTag, '', $html);
         return $html;
-    }
-
-    public function test()
-    {
-
-
-        /**
-         * Plivo
-         */
-
-        // glenn account
-        // $client = new RestClient("MAMTDJN2Q2Y2Q3NJY5MJ", "ZGM5YzUzNTZlODJmNjkyNDIxNDRjYjQ1NDAwMjhk"); 
-
-        // brent account
-        // $client = new RestClient("MAZGNINDJJNMQYMTK2NG", "NzUzYWUyZWNkM2NjYmU2NGMwZmMyZmRhZWNiMTJm"); 
-
-        // try {
-        //     $response = $client->accounts->get();
-        //     echo '<pre>';
-        //     print_r($response->properties);
-        //     echo '</pre>';
-        // }
-        // catch (PlivoRestException $ex) {
-        //     echo 'asd';
-        //     print_r($ex);
-        // }
-
-        // $ch = curl_init();
-
-        // curl_setopt($ch, CURLOPT_URL, 'https://api.plivo.com/v1/Account/MAMTDJN2Q2Y2Q3NJY5MJ/');
-        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        // curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-
-        // curl_setopt($ch, CURLOPT_USERPWD, 'AUTH_ID' . ':' . 'ZGM5YzUzNTZlODJmNjkyNDIxNDRjYjQ1NDAwMjhk');
-
-        // $result = curl_exec($ch);
-        // if (curl_errno($ch)) {
-        //     echo 'Error:' . curl_error($ch);
-        // }
-        // curl_close($ch);
-
-        // echo '<pre>';
-        // print_r($result);
-        // echo '</pre>';
-
-
-        // // Sample SMS Sending
-        // $client = new RestClient("MAMTDJN2Q2Y2Q3NJY5MJ", "ZGM5YzUzNTZlODJmNjkyNDIxNDRjYjQ1NDAwMjhk");
-
-        $plivo_credentials = $this->tablelist->plivo_client_credentials;
-
-        // $client = new RestClient($plivo_credentials['auth_id'], $plivo_credentials['auth_token']); 
-        $client = new RestClient("MAZGNINDJJNMQYMTK2NG", "NzUzYWUyZWNkM2NjYmU2NGMwZmMyZmRhZWNiMTJm");
-        $message_created = $client->messages->create(
-            '+17077230437',
-            ['+971503361319'],
-            'hello there testq'
-            // 'Howdy Glenn,
-            // We`re excited that you`ve decided to sell your device to TronicsPay. We currently reviewing your application and we will get back to you as soon as possible. To print your free shipping label you can click here.
-
-            // We also created an account for you, you can login at Member Login using these email aen00100@gmail.com with the password H4KybWoVI2.'
-        );
-        echo '<pre>';
-        print_r($message_created);
-        echo '</pre>';
-
-
-        // // Sample 1 : Sending SMS with callback
-        // $client = new RestClient("auth_id", "auth_token");
-        // $response = $client->messages->create(
-        // null, #from
-        // ['+14152223333'], #to
-        // "Hello, this is a sample text", #text
-        // ["url"=>"http://foo.com/sms_status/"],
-        // 'your_powerpack_uuid'
-        // );
-        // print_r($response);
-        // // Prints only the message_uuid
-        // print_r($response->getmessageUuid(0));
-
-
-        // // Sample 2 : Retrieve a message
-        // // reference: https://www.plivo.com/docs/sms/api/message#retrieve-a-message
-        // GET: https://api.plivo.com/v1/Account/{auth_id}/Message/{message_uuid}/
-
-        // // Sample 3 : List all message
-        // // reference: https://www.plivo.com/docs/sms/api/message#list-all-messages
-        // GET: https://api.plivo.com/v1/Account/{auth_id}/Message/
-
-        // Sample 4 : Bulk messaging 
-        // reference : https://www.plivo.com/docs/sms/api/message#bulk-messaging
-
-        // Sample 5 : Message status callback
-        // reference : https://www.plivo.com/docs/sms/api/message#message-status-callbacks
-
-
-
-        /**
-         * Rapid API
-         */
-        // $curl = curl_init();
-
-        // curl_setopt_array($curl, [
-        //     CURLOPT_URL => "https://telesign-telesign-send-sms-verification-code-v1.p.rapidapi.com/sms-verification-code?phoneNumber=%2B971503361319&verifyCode=1",
-        //     CURLOPT_RETURNTRANSFER => true,
-        //     CURLOPT_FOLLOWLOCATION => true,
-        //     CURLOPT_ENCODING => "",
-        //     CURLOPT_MAXREDIRS => 10,
-        //     CURLOPT_TIMEOUT => 30,
-        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        //     CURLOPT_CUSTOMREQUEST => "POST",
-        //     CURLOPT_HTTPHEADER => [
-        //         "x-rapidapi-host: telesign-telesign-send-sms-verification-code-v1.p.rapidapi.com",
-        //         "x-rapidapi-key: c8a5d53049mshc975f6f3daf6b26p112be4jsna78fc552d17a"
-        //     ],
-        // ]);
-
-        // $response = curl_exec($curl);
-        // $err = curl_error($curl);
-
-        // curl_close($curl);
-
-        // if ($err) {
-        //     echo "cURL Error #:" . $err;
-        // } else {
-        //     echo $response;
-        // }
-
-        // if ($err) {
-        //     echo "cURL Error #:" . $err;
-        // } else {
-        //     echo $response;
-        // }
-
-        // echo '<pre>';
-        // print_r($response);
-        // echo '</pre>';
-        // exit; 
-
-
-
-
-
-        /**
-         * Messagebird
-         */
-        // // Generated by curl-to-PHP: http://incarnate.github.io/curl-to-php/
-        // $ch = curl_init();
-
-        // curl_setopt($ch, CURLOPT_URL, 'https://rest.messagebird.com/messages');
-        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        // curl_setopt($ch, CURLOPT_POST, 1);
-        // curl_setopt($ch, CURLOPT_POSTFIELDS, "recipients=+971503361319&originator=+971503361319&body=Hi! This is your first message.");
-
-        // $headers = array();
-        // $headers[] = 'Authorization: AccessKey HfIDBYwzbzKvk8obYtMkkKoWo';
-        // $headers[] = 'Content-Type: application/x-www-form-urlencoded';
-        // curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-        // $result = curl_exec($ch);
-        // if (curl_errno($ch)) {
-        //     echo 'Error:' . curl_error($ch);
-        // }
-        // curl_close($ch);   
-        // echo '<pre>';
-        // print_r($result);
-        // echo '</pre>';
-
-        // exit; 
-
-
-        /**
-         * GlobalSMS
-         */
-        // // initialize a new curl
-        // $ch = curl_init();
-        // $baseURL ="http://api.globalsms.ae/failsafe/HttpLink?username=uaepromo&pin=TRm@E8dh&";
-        // $replyTo = "Ingizly"; //senderId
-        // $messageBody = urlencode(('test only'));
-        // $recipientNo = '+971503361319';
-        // $URI = $baseURL;
-        // $URI .= "signature=" . $replyTo; 
-        // $URI .= "&mnumber=" . $recipientNo; 
-        // $URI .="&message=" . $messageBody; 
-        // // Set URL to connect to
-        // curl_setopt($ch, CURLOPT_URL,$URI); 
-        // // Set header supression
-        // curl_setopt($ch, CURLOPT_HEADER,0); // Disable SSL peer verification
-        // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        // // Indicate that the message should be returned to a variable
-        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        // // Make request
-        // $content = curl_exec($ch);
-        // $result = json_decode($content, true);
-        // $responses = curl_getinfo($ch);
-        // //print_r($responses);
-        // if($responses['http_code']==200){
-        //     //print_r($responses);
-        //     return true;
-
-        // }
-        // curl_close($ch);
-        // echo '<pre>';
-        // print_r($responses);
-        // echo '</pre>';
-
-        // exit;
-
-
-
-
-        /**
-         * TWILIO
-         */
-        // Your Account SID and Auth Token from twilio.com/console
-        // $account_sid = $this->tablelist->twilio_sms_credential['account_sid'];
-        // $auth_token = $this->tablelist->twilio_sms_credential['auth_token'];
-        // $twilio_number = "+13347210661";
-        // $message = 'Howdy Glenn,
-        // We`re excited that you`ve decided to sell your device to TronicsPay. We currently reviewing your application and we will get back to you as soon as possible. To print your free shipping label you can click here.
-
-        // We also created an account for you, you can login at Member Login using these email aen00100@gmail.com with the password H4KybWoVI2.';
-        // try {
-        //     $client = new Client($account_sid, $auth_token);
-        //     $client->messages->create(
-        //         // Where to send a text message (your cell phone?)
-        //         '+971503361319',
-        //         array(
-        //             'from' => $twilio_number,
-        //             'body' => $message
-        //         )
-        //     );
-        //     echo '<pre>';
-        //     print_r($client);
-        //     echo '</pre>';
-
-        // } catch (\Exception $e) {
-        //     echo $e->getMessage();
-        // }
-        // exit;
-
-
-
-
-        /**
-         * Messagebird
-         */
-        // $account_sid = 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
-        // $auth_token = 'your_auth_token';
-        // // In production, these should be environment variables. E.g.:
-        // // $auth_token = $_ENV["TWILIO_ACCOUNT_SID"]
-        // // A Twilio number you own with SMS capabilities
-        // $twilio_number = "+15017122661";
-        // $client = new Client($account_sid, $auth_token);
-        // $client->messages->create(
-        //     // Where to send a text message (your cell phone?)
-        //     '+15558675310',
-        //     array(
-        //         'from' => $twilio_number,
-        //         'body' => 'I sent this message in under 10 minutes!'
-        //     )
-        // );
-
-
-
-
-
-        // require_once __DIR__.'/../../../vendor/messagebird/php-rest-api/autoload.php';
-        // $messageBird = new \MessageBird\Client('HfIDBYwzbzKvk8obYtMkkKoWo'); // Set your own API access key here.
-
-        // $message             = new \MessageBird\Objects\Message();
-        // $message->originator = 'YourBrand';
-        // $message->recipients = ['+971503361319'];
-        // $message->body       = 'This is a test message.';
-        // // $messageBird->messages->create($message);
-        // echo '<pre>';
-        // print_r($message);
-        // echo '</pre>';
-        // try {
-        //     $messageResult = $messageBird->messages->create($message);
-        //     var_dump($messageResult);
-
-        // } catch (\MessageBird\Exceptions\AuthenticateException $e) {
-        //     // That means that your accessKey is unknown
-        //     echo 'wrong login';
-
-        // } catch (\MessageBird\Exceptions\BalanceException $e) {
-        //     // That means that you are out of credits, so do something about it.
-        //     echo 'no balance';
-
-        // } catch (\Exception $e) {
-        //     echo $e->getMessage();
-        // }
-        // exit;
-        // return 'adsads';
-        // return $message;
-
-
-
     }
 }

@@ -33,7 +33,19 @@ return [
     'google' => [
         'client_id' => env('GOOGLE_OAUTH_CLIENT_ID'),
         'client_secret' => env('GOOGLE_OAUTH_CLIENT_SECRET'),
-        'redirect' => 'http://tronicspay.tronicspay.com/customer/auth/google/callback',
+        'redirect' => 'https://tronicspay.com/customer/auth/google/callback',
+    ],
+
+    'facebook' => [
+        'client_id' => env('FACEBOOK_OAUTH_CLIENT_ID'),
+        'client_secret' => env('FACEBOOK_OAUTH_CLIENT_SECRET'),
+        'redirect' => 'https://tronicspay.com/customer/auth/facebook/callback',
+    ],
+
+    'twilio' => [
+        'sid' => env('TWILIO_SID'),
+        'auth_token' => env('TWILIO_AUTH_TOKEN'),
+        'messaging_service_sid' => env('TWILIO_MESSAGING_SERVICE_SID'),
     ],
 
 ];

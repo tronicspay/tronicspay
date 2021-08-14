@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light shadow-sm bg-light fixed-top padtb15">
+<nav class="navbar navbar-expand-xl navbar-light shadow-sm bg-light fixed-top padtb15">
   <div class="container">
     <a class="navbar-brand d-flex align-items-center ml-3 ml-s-0" href="{{ url('/') }}">
       <img src="{{ url('assets/images/logo.png') }}" class="d-inline-block align-top" />
@@ -23,6 +23,9 @@
         </li>
         <li class="nav-item px-lg-2">
           <a href="{{ url('contact-us') }}" class="{{ navactive('contact-us') }}" target="_self">Contact Us</a>
+        </li>
+        <li class="nav-item px-lg-2">
+          <a href="{{ url('support') }}" class="{{ navactive('support') }}" target="_self">Help</a>
         </li>
 
       </ul>

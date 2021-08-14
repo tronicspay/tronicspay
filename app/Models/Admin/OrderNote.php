@@ -16,7 +16,7 @@ class OrderNote extends Model
     {
         return $this->belongsTo(\App\Models\Admin\Order::class, 'order_id');
     }
-    
+
     public function getHashedidAttribute()
     {
         return \Hashids::encode($this->id);
@@ -25,7 +25,6 @@ class OrderNote extends Model
 
     public function getDisplaycreatedatAttribute()
     {
-        return Carbon::parse($this->created_at)->format('M d Y');
+        return Carbon::parse($this->created_at)->toDayDateTimeString();
     }
 }
-

@@ -34,12 +34,19 @@ function GenerateCartDetails()
                 $('#empty-cart').removeClass('hideme');
                 $('#cart-total-summary, #cart-checkout, #my-cart-details').addClass('hideme');
                 $('#my-cart-details').html('');
+                $('#checkout-step').addClass('hideme');
                 localStorage.clear();
             } else {
                 $('#my-cart-details').html(response.cartHtml);
                 $('#my-cart-details, #cart-total-summary, #cart-checkout').removeClass('hideme');
                 $('.cart-subtotal, .cart-total').html(response.subTotal);
-                
+
+                const easyPostFee = Number(document.querySelector("#insurance-optin").dataset.insurance) / 100
+                const merchantFee = (20 / 100) * easyPostFee 
+                const totalFee = easyPostFee + merchantFee
+
+                document.querySelector("#insurance-price").innerHTML = (totalFee * Number(response.subTotal.replace("$", "").replace(",", ""))).toFixed(2)
+
                 $('.cart-item-quantity').on('change', function () {
                     $('#preloader, .addOnPreloader').removeClass('hideme');
                     $('#cart-total-summary, #cart-checkout').addClass('hideme');
@@ -47,6 +54,31 @@ function GenerateCartDetails()
                     var sessionCart = JSON.parse(decryptData(localStorage.getItem("sessionCart")));
                     var cart_key = $(this).attr('data-attr-id');
                     sessionCart[cart_key]['quantity'] = $(this).val();
+                    localStorage.setItem("sessionCart", encryptData(JSON.stringify(sessionCart)));
+                    GenerateCartDetails();
+                });
+
+                $('.step-up').on('click', function () {
+                    this.parentNode.parentNode.querySelector(`[type=number]`).stepUp()
+                    var cart_key = $(this).attr('data-attr-id');
+                    const quantity = document.querySelector("#quant-" + cart_key).value
+                    $('#preloader, .addOnPreloader').removeClass('hideme');
+                    $('#cart-total-summary, #cart-checkout').addClass('hideme');
+                    $('#my-cart-details').html('');
+                    var sessionCart = JSON.parse(decryptData(localStorage.getItem("sessionCart")));
+                    sessionCart[cart_key]['quantity'] = quantity 
+                    localStorage.setItem("sessionCart", encryptData(JSON.stringify(sessionCart)));
+                    GenerateCartDetails();
+                });
+                $('.step-down').on('click', function () {
+                    this.parentNode.parentNode.querySelector(`[type=number]`).stepDown()
+                    var cart_key = $(this).attr('data-attr-id');
+                    const quantity = document.querySelector("#quant-" + cart_key).value
+                    $('#preloader, .addOnPreloader').removeClass('hideme');
+                    $('#cart-total-summary, #cart-checkout').addClass('hideme');
+                    $('#my-cart-details').html('');
+                    var sessionCart = JSON.parse(decryptData(localStorage.getItem("sessionCart")));
+                    sessionCart[cart_key]['quantity'] = quantity 
                     localStorage.setItem("sessionCart", encryptData(JSON.stringify(sessionCart)));
                     GenerateCartDetails();
                 });

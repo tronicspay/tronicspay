@@ -37,7 +37,7 @@ if (isset($parts['query']) && $parts['query'] == 'email=true') {
                             <div class="social-container">
                                 <a href="#" class="social form-a"><i class="fab fa-instagram"></i></a>
                                 <a href="/customer/auth/google/login/redirect" class="social form-a"><i class="fab fa-google"></i></a>
-                                <a href="#" class="social form-a"><i class="fab fa-facebook"></i></a>
+                                <a href="/customer/auth/facebook/login/redirect" class="social form-a"><i class="fab fa-facebook"></i></a>
                             </div>
                             <span>or use your account</span>
                             <input type="text" name="email" placeholder="Email" value="{{ old('email') }}" />

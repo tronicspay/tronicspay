@@ -1,6 +1,6 @@
 @extends('layouts.front')
 @section('content')
-
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 <div class="pt-70 pb50 d-none" id="whole-content">
     <div class="container pt-50">
         <div class="row">
@@ -31,6 +31,14 @@
                 <div id="checkoutInProgress">
                     <div class="row">
                         <div class="col-md-12">
+                            <div class="card mb-5">
+                                <div class="card-body" style="margin: -17px -6px -17px -6px;">
+
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-md-12">
                             <div class="card">
                                 <div class="card-body">
                                     <!-- <div id="my-cart-details" class="hideme"></div> -->
@@ -41,6 +49,12 @@
                                                 @csrf
                                                 <h5>Provide your shipping address</h5>
                                                 <p>We use this information to create your shipping labels so you can send your item to us for free!</p>
+                                                <div class="form-row">
+                                                    <label class="full-field">
+                                                        <span class="form-label">Deliver to*</span>
+                                                        <input id="autocomplete-input" name="autocomplete-input" required autocomplete="off" />
+                                                    </label>
+                                                </div>
                                                 <div class="form-row">
                                                     <div class="form-group col-md-6">
                                                         <label class="col-form-label col-form-label-sm">First Name</label>
@@ -117,11 +131,48 @@
                                                         <input type="checkbox" value="terms-and-condition" id="terms-and-condition" />
                                                         <label for="checkbox">Agree to <a href="#" data-toggle="modal" data-target="#terms-and-conditions-modal">terms and conditions.</a></label>
                                                     </div>
+                                                </div>
+                                                <div class="form-group">
+
+                                                    <div class="row pt10">
+                                                        <div class="col-md-2">
+                                                            <b>Total</b>
+                                                        </div>
+                                                        <div class="col-md-7">
+                                                            <div class="cart-subtotal">$100</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row pt10">
+                                                        <div class="col-md-2">
+                                                            <b>Insurance</b>
+                                                        </div>
+                                                        <div class="col-md-7">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" value="" id="insurance-optin" name="insurance-optin-check" data-insurance="{{$insurance_fee}}">
+                                                                <label class="form-check-label" for="insurance-optin">
+                                                                    Puchase Order Insurance for $<span id="insurance-price"></span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row pt10">
+                                                        <div class="col-md-2">
+                                                            <b>Final</b>
+                                                        </div>
+                                                        <div class="col-md-7">
+                                                            <div class="cart-final cart-total">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group d-flex justify-content-end align-items-center">
                                                     <div>
+                                                        <input type="hidden" id="insurance-optin-hidden" name="insurance_optin">
                                                         <button type="submit" class="btn btn-warning btn-md" id="btn-checkout">Checkout</button>
                                                         <button type="button" class="btn btn-warning btn-md disabled hideme" id="btn-checkout-loader"><i class="fas fa-spinner fa-spin"></i> Please wait...</button>
                                                     </div>
                                                 </div>
+
                                             </form>
                                         </div>
                                     </div>
@@ -199,6 +250,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/11.0.9/js/intlTelInput.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/11.0.9/js/intlTelInput.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/11.0.9/js/utils.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=!1m18!1m12!1m3!1d3097.2195538694464!2d-94.41648289308372!3d39.07869647373669!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x87c0fdf2628895ff%3A0x74b538aa176b05bc!2sTronics%20Pay!5e0!3m2!1sen!2sph!4v1605701145623!5m2!1sen!2sph&callback=initAutocomplete&libraries=places&v=weekly" async></script>
 <script>
     if (document.readyState == "loading") {
         if (!localStorage.getItem('sessionCart')) {
@@ -209,6 +261,41 @@
             if (cart.length < 0) {
                 window.location.href = '../../';
             }
+        }
+    }
+
+    $(function() {
+        if (localStorage.getItem("sessionCart")) {
+            var sessionCart = JSON.parse(decryptData(localStorage.getItem("sessionCart")));
+            $.ajax({
+                type: "POST",
+                url: base_url + '/api/web/cart',
+                data: {
+                    'sessionCart': sessionCart
+                },
+                dataType: "json",
+                success: function(response) {
+                    if (response.hasCart) {
+                        $('.cart-subtotal, .cart-total').html(response.subTotal);
+                        const easyPostFee = Number(document.querySelector("#insurance-optin").dataset.insurance) / 100
+                        const merchantFee = (20 / 100) * easyPostFee
+                        const totalFee = easyPostFee + merchantFee
+                        document.querySelector("#insurance-price").innerHTML = (totalFee * Number(response.subTotal.replace("$", ""))).toFixed(2)
+                    }
+                }
+            });
+        }
+    });
+
+    document.querySelector("#insurance-optin").onchange = function(e) {
+        document.querySelector("#insurance-optin-hidden").value = e.target.checked
+        const prevTotal = document.querySelector(".cart-subtotal").innerHTML.replace("$", "")
+        if (e.target.checked) {
+            const fee = Number(document.querySelector("#insurance-price").innerHTML)
+            document.querySelector(".cart-final").innerHTML = "$" + (Number(prevTotal) - fee).toFixed(2)
+        } else {
+            document.querySelector(".cart-final").innerHTML = "$" + Number(prevTotal).toFixed(2)
+
         }
     }
 
@@ -311,6 +398,7 @@
                 'bank': '',
                 'account_name': '',
                 'account_number': '',
+                'insurance_optin': '',
                 'cart': null
             };
             jQuery.each($(this).serializeArray(), function(i, field) {

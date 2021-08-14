@@ -31,15 +31,6 @@ use App\Models\TableList as Tablelist;
 use Illuminate\Support\Facades\Auth;
 use PDF, DB;
 
-
-// For Plivio
-require __DIR__ . '/../../../vendor/autoload.php';
-
-use Plivo\RestClient;
-use Plivo\Exceptions\PlivoAuthenticationException;
-use Plivo\Exceptions\PlivoRestException;
-
-
 class DeviceController extends Controller
 {
     protected $brandRepo;
@@ -635,17 +626,6 @@ class DeviceController extends Controller
 
     public function store(Request $request)
     {
-        // return $request->all();
-        // $cart = $request->cart[0];
-        // $brand = $this->brandRepo->findByField('name', $cart['brand']);
-        // $product = $this->productRepo->rawByField("brand_id = ? and model = ?", [$brand->id, $cart['model']]);
-        // $storage = $this->productStorageRepo->rawByField("product_id = ? and title = ?", [$product->id, $cart['storage']]);
-        // return response()->json([
-        //     "cart_storage" => $cart['storage'],
-        //     "storage_price" => $storage[$cart['device_type']],
-        //     "storage_device" => $storage,
-        // ]);
-        // return $storage[$cart['storage']];
         $response['status'] = 200;
 
         if (Auth::guard('customer')->check() != null) {
@@ -654,11 +634,6 @@ class DeviceController extends Controller
             $request['lname'] = $customer['lname'];
             $request['address1'] = $customer['address1'];
             $request['email'] = $customer['email'];
-            // $request['payment_method'] = $customer['payment_method'];
-            // $request['account_username'] = $customer['account_username'];
-            // $request['account_name'] = $customer['account_name'];
-            // $request['account_number'] = $customer['account_number'];
-            // $request['bank'] = $customer['bank'];
         } else {
             if ($request['fname'] == null) {
                 $response['status'] = 400;
@@ -672,6 +647,9 @@ class DeviceController extends Controller
             } else if ($request['state_id'] == null) {
                 $response['status'] = 400;
                 $response['message'] = "State field is required";
+            } else if ($request['phone'] == null) {
+                $response['status'] = 400;
+                $response['message'] = "Phone field is required";
             } else if ($request['payment_method'] == null) {
                 $response['status'] = 400;
                 $response['message'] = "Payment method field is required";
@@ -707,13 +685,49 @@ class DeviceController extends Controller
             }
         }
 
-        $phone_number = easypost_phone_format($request->get('phone'));
-        if (strlen($phone_number) != 10) {
+        try {
+            phone($request['phone'], 'US')->formatE164();
+        } catch (\Exception $e) {
             return response()->json([
                 "status"    => 400,
-                "message"   => "phone number input should containt a 10 digit number"
+                "message"   => "Invalid phone number"
             ]);
         }
+
+        // $phone_number = "";
+        // if ($request->get('phone') != null) {
+        //     $phone_number = easypost_phone_format($request->get('phone'));
+        //     if (strlen($phone_number) != 10) {
+        //         return response()->json([
+        //             "status"    => 400,
+        //             "message"   => "phone number input should containt a 10 digit number"
+        //         ]);
+        //     }
+        // }
+
+        $mobiles = 0;
+        $others = 0;
+        $gaming = 0;
+        foreach ($request['cart'] as $key => $value) {
+            $brand = $this->brandRepo->findByField('name', $value['brand']);
+
+            if ($brand['device_type'] === 'Mobile') {
+                $mobiles = $mobiles + $value['quantity'];
+            } else if ($brand['device_type'] === 'Other') {
+                $others = $others + $value['quantity'];
+            } else if ($brand['device_type'] === 'Gaming') {
+                $gaming = $gaming + $value['quantity'];
+            }
+        }
+
+        // die("<pre>" . print_r($brand->device_type, true) . "</pre>");
+        if ($mobiles > 10 || $others > 10 || $gaming > 3) {
+            return response()->json([
+                "status"    => 400,
+                "message"   => "Please remove some devices from your cart."
+            ]);
+        }
+
 
         $chkcustomer = $this->customerRepo->findByField('email', $request['email']);
         if ($response['status'] == 200) {
@@ -732,48 +746,81 @@ class DeviceController extends Controller
                 "phone"   => $config->phone, // "310-808-5243", // $config->phone,
             ]);
 
-            // $to_address = Address::create([
-            //     // "company" => "", // $config->company_name,
-            //     "name" => "Dr. Steve Brule", // $config->company_name, 
-            //     "street1" => "179 N Harbor Dr", //$config->address1,
-            //     // "street2" => $config->address2,
-            //     "city"    => "Redondo Beach", // $config->city,
-            //     "state"   => "CA", // $config->state,
-            //     "zip"     => "90277",  // $config->zip_code,
-            //     "phone"   => "310-808-5243", // $config->phone,
-            // ]);
 
-            $from_address = Address::create([
-                "company" => null,
-                "name" => $request['fname'] . " " . $request['lname'],
-                "street1" => $request['address1'], // "118 2nd Street",
-                "street2" => $request['address2'], // "4th Floor",
-                "city"    => $request['city'], // "San Francisco", 
-                "state"   => $request['state_id'], // "CA",
-                "zip"     => $request['zip_code'], // "94105",
-                // "phone"   => $request['phone'], // "415-456-7890",
-                "phone"   => $phone_number,
-            ]);
+            $from_address = null;
+            try {
+                $from_address = Address::create([
+                    // $from_address = Address::create_and_verify([
+                    "company" => null,
+                    "name" => $request['fname'] . " " . $request['lname'],
+                    "street1" => $request['address1'],
+                    "street2" => $request['address2'],
+                    "city"    => $request['city'],
+                    "state"   => $request['state_id'],
+                    "zip"     => $request['zip_code'],
+                    "phone"   => phone($request['phone'], 'US')->formatE164(),
+                ]);
+            } catch (\Exception $e) {
+                // return response()->json([
+                //     "status"    => 400,
+                //     "message"   => "Invalid address."
+                // ]);
+            }
 
-            // $from_address = Address::create([
-            //     "company" => "EasyPost",
-            //     "street1" => "118 2nd Street",
-            //     "street2" => "4th Floor",
-            //     "city"    => "San Francisco", 
-            //     "state"   => "CA",
-            //     "zip"     => "94105",
-            //     // "phone"   => "415-456-7890",
-            //     "phone"   => "+639183219585"
-            // ]);
 
-            // EasyPost::setApiKey(config('account.easypost_apikey'));
+
+            // die("<pre>" . var_dump($from_address) . "</pre>");
+
+
+            $parcel_height = 0;
+            $parcel_width = 0;
+            $parcel_length = 0;
+            $total_weight = 0;
+
+            if ($request['cart'] != null) {
+                $max_width = 0;
+                $max_height = 0;
+                $max_length = 0;
+                $total_products = 0;
+                foreach ($request['cart'] as $key => $value) {
+                    $brand = $this->brandRepo->findByField('name', $value['brand']);
+                    $product = $this->productRepo->rawByField("brand_id = ? and model = ?", [$brand->id, $value['model']]);
+
+                    if ($product->width > $max_width) {
+                        $max_width = $product->width;
+                    }
+                    if ($product->height > $max_height) {
+                        $max_height = $product->height;
+                    }
+                    if ($product->length > $max_length) {
+                        $max_length = $product->length;
+                    }
+
+                    $total_weight = $total_weight + $product->weight * $value['quantity'];
+                    $total_products = $total_products + $value['quantity'];
+                }
+
+
+                $parcel_height = $total_products * $max_height + 1;
+                $parcel_width = $max_width + 1;
+                $parcel_length = $max_length + 1;
+                $total_weight = $total_weight + 10;
+            }
+
+
+
+
             $parcel = Parcel::create([
                 // 'predefined_package' => $this->package($product->height, $product->width),
                 // 'predefined_package' => 'LargeFlatRateBox',
-                'length' => 9,
-                'width' => 6,
-                'height' => 2,
-                'weight' => 10,
+                'length' => $parcel_length,
+                'width' =>  $parcel_width,
+                'height' => $parcel_height,
+                'weight' => $total_weight,
+                // 'length' => 10,
+                // 'width' =>  10,
+                // 'height' => 10,
+                // 'weight' => 10,
             ]);
 
             $shipment = Shipment::create([
@@ -823,54 +870,51 @@ class DeviceController extends Controller
             }
 
             if ($request['cart'] != null) {
-                /**
-                 * start: easy post integration
-                 */
 
-                // EasyPost::setApiKey(config('account.easypost_apikey'));
-                // $config = $this->configRepo->find(1);
 
-                // $to_address = Address::create([
-                //     // "company" => "", // $config->company_name,
-                //     "name" => $config->company_name, // "Dr. Steve Brule",
-                //     "street1" => $config->address1, //"179 N Harbor Dr", //$config->address1,
-                //     // "street2" => $config->address2,
-                //     "city"    => $config->city, // "Redondo Beach", // $config->city,
-                //     "state"   => $config->state, // "CA", // $config->state,
-                //     "zip"     => $config->zip_code, // "90277",  // $config->zip_code,
-                //     "phone"   => $config->phone, // "310-808-5243", // $config->phone,
-                // ]);
+                $max_width = 0;
+                $max_height = 0;
+                $max_length = 0;
+                $total_weight = 0;
+                foreach ($request['cart'] as $key => $value) {
+                    $brand = $this->brandRepo->findByField('name', $value['brand']);
+                    $product = $this->productRepo->rawByField("brand_id = ? and model = ?", [$brand->id, $value['model']]);
 
-                // $from_address = Address::create([
-                //     "company" => "EasyPost",
-                //     "street1" => $address->address1, // "118 2nd Street",
-                //     "street2" => $address->address2, // "4th Floor",
-                //     "city"    => $address->city, // "San Francisco", 
-                //     "state"   => $address->state, // "CA",
-                //     "zip"     => $address->zip, // "94105",
-                //     "phone"   => $address->phone, // "415-456-7890",
-                // ]);
+                    if ($product->width > $max_width) {
+                        $max_width = $product->width;
+                    }
+                    if ($product->height > $max_height) {
+                        $max_height = $product->height;
+                    }
+                    if ($product->length > $max_length) {
+                        $max_length = $product->length;
+                    }
 
-                // // EasyPost::setApiKey(config('account.easypost_apikey'));
-                // $parcel = Parcel::create([
-                //     // 'predefined_package' => $this->package($product->height, $product->width),
-                //     'predefined_package' => 'LargeFlatRateBox',
-                //     'weight' => 76.9, // $product->height,
-                // ]);
+                    $total_weight = $total_weight + $product->weight * $value['quantity'];
+                }
 
-                // $shipment = Shipment::create([
-                //     'to_address'   => $to_address,
-                //     'from_address' => $from_address,
-                //     'parcel'       => $parcel
-                // ]);
-                // $shipment->buy($shipment->lowest_rate());
 
-                $shipment->buy($shipment->lowest_rate());
-                // $shipment->insure(array('amount' => 100));
+                // die(")))" . $max_width . "_" . $max_height . "_" . $max_length . "_" . $total_weight);
 
-                /**
-                 * end: easy post integration
-                 */
+
+                $rate = $shipment->lowest_rate();
+                $shipment->buy($rate);
+                // die("<pre>" . ($rate['carrier']) . "</pre>");
+
+                $insurance_cost = 0;
+                if ($request['insurance_optin']) {
+                    $config = $this->configRepo->find(1);
+                    $easy_post_fee = $config->insurance_fee / 100;
+                    $merchant_fee = (20 / 100) * $easy_post_fee;
+                    $total_fee = $easy_post_fee + $merchant_fee;
+                    $subTotal = 0;
+                    foreach ($request['cart'] as $key => $value) {
+                        $itemSubTotal = $value['amount'] * $value['quantity'];
+                        $subTotal = $subTotal + $itemSubTotal;
+                    }
+                    $insurance_cost = $total_fee * $subTotal;
+                    $shipment->insure(array('amount' => $subTotal));
+                }
 
 
                 $makeOrderRequest = [
@@ -886,11 +930,13 @@ class DeviceController extends Controller
                     'account_bank' => $request['bank'],
                     'shipping_label' => $shipment->postage_label->label_url,
                     'shipping_status' => $shipment->tracker->status,
-                    'shipping_fee' => $shipment->rates[0]->retail_rate,
+                    'shipping_fee' => $rate['rate'],
                     'tracking_code' => $shipment->tracking_code,
-                    'carrier' => $shipment->rates[0]->carrier,
-                    'delivery_days' => $shipment->rates[0]->delivery_days,
-                    'shipping_tracker' => $shipment->tracker->public_url
+                    'shipping_id' => $shipment->id,
+                    'carrier' => $rate['carrier'],
+                    'delivery_days' => $rate['delivery_days'],
+                    'shipping_tracker' => $shipment->tracker->public_url,
+                    'insurance_cost' => $insurance_cost
 
                 ];
 
@@ -899,7 +945,6 @@ class DeviceController extends Controller
 
                 foreach ($request['cart'] as $key => $value) {
                     $brand = $this->brandRepo->findByField('name', $value['brand']);
-                    // $product = $this->productRepo->rawByField("brand_id = ? and network = ? and storage = ? and model = ?", [$brand->id, $value['network'], $value['storage'], $value['model']]);
                     $product = $this->productRepo->rawByField("brand_id = ? and model = ?", [$brand->id, $value['model']]);
 
                     $productStorage = $this->productStorageRepo->rawByField("product_id = ? and title = ?", [$product->id, $value['storage']]);
@@ -949,6 +994,8 @@ class DeviceController extends Controller
             $data['overallSubTotal'] = 0;
             $data['counter'] = 1;
 
+            $credentials_HTML = "";
+
             if ($chkcustomer != null) {
                 $data['isRegistered'] = true;
                 $subject = "TronicsPay Order Confirmation";
@@ -956,247 +1003,74 @@ class DeviceController extends Controller
 
                 $content = view('mail.customer', $data)->render();
                 // $content = view('mail.customerAddBundle', $data)->render();
-                $response['status'] = 301;
-                $response['message'] = 'Cart has been added to your bundles';
-                $response['redirectTo'] = 'customer/my-bundles';
+
+                // $response['status'] = 301;
+                // $response['message'] = 'Cart has been added to your bundles';
+                // $response['redirectTo'] = 'customer/my-bundles';
+
+                $credentials_HTML = "<p><a href='../customer/auth/login'>Login here</a></p>";
             } else {
                 $data['isRegistered'] = false;
                 $subject = "TronicsPay Email Confirmation";
                 $data['header'] = "TronicsPay Email Confirmation";
                 $content = view('mail.customer', $data)->render();
-                $response['status'] = 200;
-                $htmlResult = '<div class="container">
-                                    <div class="row">
-                                        <div class="form-group col-md-12" align="center">
-                                            <img src="' . url("./assets/images/logo.png") . '" class="img-fluid">
-                                        </div>
-                                    </div>
-                                    <br />
-                                    <br />
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                        <div class="text-center">
-                                            <h3>Thank you ' . $result['fname'] . ' for selling ' . $result['model'] . '!</h3>
-                                            <p>
-                                            We are currently reviewing the device, we will send a confirmation email.<br>
-                                            Please check your email and login at <a href="../customer/auth/login">Member Login</a>.
-                                            </p>
-                                        </div>
-                                        </div>
-                                    </div>
-                                </div>';
 
-                $response['message'] = $htmlResult;
+                $credentials_HTML = "<p><a href='../customer/auth/login'>Login</a> with Username: " . $data['email'] . ", password: " . $data['password'] . "</p>";
             }
+            $response['status'] = 200;
+            //  
+            $shipping_label_url = url('order/' . $order["hashedId"] . '/shippinglabel');
+            $htmlResult = '<div class="container">
+                                <div class="row">
+                                    <div class="form-group col-md-12" align="center">
+                                        <img src="' . url("./assets/images/logo.png") . '" class="img-fluid">
+                                    </div>
+                                </div>
+                                <br />
+                                <br />
+                                <div class="row">
+                                    <div class="col-md-12">
+                                    <div class="text-center">
+                                        <h3>Thank you ' . $result['fname'] . ' for selling ' . $result['model'] . '!</h3>
+                                        <p>
+                                        We are currently reviewing the device, we will send a confirmation email.<br>
+                                        Please check your email and login at <a href="../customer/auth/login">Member Login</a>.
+                                        </p>
+                                        <p>
+                                        Print <a href="' . $shipping_label_url . '">your shipping label</a>
+                                        </p>' . $credentials_HTML . ' 
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>';
 
+            $response['message'] = $htmlResult;
+
+            if (app('App\Http\Controllers\GlobalFunctionController')->checkSMSFeatureIfActive()) {
+
+                $message = 'Order number: ' . $order->order_no . '
+Shipping label: ' . $shipping_label_url . '
+Tracking number: ' . $order->tracking_code . '
+Tracking link: ' . $order->shipping_tracker . '
+
+Thank you for choosing and trusting TronicsPay.';
+
+                app('App\Http\Controllers\GlobalFunctionController')->doSmsSending($order->customer->bill->phone, $message);
+            }
 
 
             Mailer::sendEmail($email, $subject, $content);
         }
         return $response;
-        // $chkcustomer = $this->customerRepo->findByField('email', $request['email']);
-        // $config = $this->configRepo->find(1);
 
-        /**
-         *  start: Customer
-         */
-
-        // if(empty($chkcustomer)){
-        //     $password = Str::random(10);
-        //     $customerRequest = [
-        //         'fname' => $request['fname'],
-        //         'lname' => $request['lname'],
-        //         'email' => $request['email'],
-        //         'password' => bcrypt($password),
-        //         'payment_method' => $request['payment_method'],
-        //         'account_username' => $request['account_username'],
-        //         'bank' => $request['bank'],
-        //         'account_name' => $request['account_name'],
-        //         'account_number' => $request['account_number']
-        //     ];
-        //     $customer = $this->customerRepo->create($customerRequest);
-        //     $addressRequest = [
-        //         'customer_id' => $customer->id,
-        //         'address1' => $request['address1'],
-        //         'address2' => $request['address2'],
-        //         'city' => $request['city'],
-        //         'state' => $request['state_id'],
-        //         'zip' => $request['zip_code'],
-        //         'phone' => $request['phone']
-        //     ];
-        //     $address = $this->addressRepo->create($addressRequest);
-        // }
-
-        // if ($request['cart'] != null) 
-        // {
-        //     foreach ($request['cart'] as $key => $value) 
-        //     {
-        //         $brand = $this->brandRepo->findByField('name', $value['brand']);
-        //         $product = $this->productRepo->rawByField("brand_id = ? and network = ? and storage = ? and model = ?", [$brand->id, $value['network'], $value['storage'], $value['model']]);
-
-        //         $parcel = $this->parcel($product);
-        //         $shipment = $this->shipping($address, $parcel);
-        //         // $ship = $shipment->buy($shipment->lowest_rate());
-
-        //         // $makeRequest = [
-        //         //     'customer_id' => isset($chkcustomer->id) ? $chkcustomer->id : $customer->id,
-        //         //     'product_id' => $product->id,
-        //         //     'amount' => $value['amount'],
-        //         //     'payment_method' => $value['payment_method'],
-        //         //     'account_username' => $value['account_username'],
-        //         //     'account_bank' => $value['bank'],
-        //         //     'account_name' => $value['account_name'],
-        //         //     'account_number' => $value['account_number'],
-        //         //     'shipping_label' => $ship->postage_label->label_url,
-        //         //     'shipping_fee' => $ship->rates[0]->retail_rate,
-        //         //     'tracking_code' => $ship->tracking_code,
-        //         //     'carrier' => $ship->rates[0]->carrier,
-        //         //     'delivery_days' => $ship->rates[0]->delivery_days
-        //         // ];
-        //         $makeRequest = [
-        //             'customer_id' => isset($chkcustomer->id) ? $chkcustomer->id : $customer->id,
-        //             'product_id' => $product->id,
-        //             'amount' => $value['amount'],
-        //             'payment_method' => $request['payment_method'],
-        //             'account_username' => $request['account_username'],
-        //             'account_bank' => $request['bank'],
-        //             'account_name' => $request['account_name'],
-        //             'account_number' => $request['account_number'],
-        //             'shipping_label' => 'For Approval',
-        //             'shipping_fee' => '10',
-        //             'tracking_code' => '1029282812891',
-        //             'carrier' => 'USPS',
-        //             'delivery_days' => '5'
-        //         ];
-
-        //     }
-        // }
-        // $this->deviceRepo->create($makeRequest);
-        // $email = $request['email'];
-        // $subject = "TronicsPay Email Confirmation";
-        // $data['header'] = "TronicsPay Email Confirmation";
-        // $data['fname'] = $request['fname'];
-        // $data['email'] = $request['email'];
-        // $data['password'] = $password;
-        // $data['company_email'] = $config->company_email;
-        // $data['model'] = $product->model;
-        // $content = view('mail.customer', $data)->render();
-        // // Mailer::sendEmail($email, $subject, $content);
-        // $result = [
-        //     'model' => $product->model,
-        //     'fname' => $request['fname']
-        // ];
-
-        // $htmlResult = '<div class="pt-70">
-        //                     <div class="container pt-70">
-        //                         <div class="row">
-        //                             <div class="col-md-12">
-        //                             <div class="text-center">
-        //                                 <h3>Thank you '.$result['fname'].' for selling '.$result['model'].'!</h3>
-        //                                 <p>
-        //                                 We are currently reviewing the device, we send a confirmation email.<br>
-        //                                 Please check your email and login at <a href="./customer/auth/login">Member Login</a>.
-        //                                 </p>
-        //                             </div>
-        //                             </div>
-        //                         </div>
-        //                     </div>
-        //                 </div>';
-
-        // $response['status'] = 200;
-        // $response['message'] = $htmlResult;
-
-        return $response;
 
         /**
          * star: Old Codes
          */
-        return redirect()->to('device')->with('result', json_encode($result));
-
-        return $request->cart;
-
-        // $chkcustomer = $this->customerRepo->findByField('email', $request['email']);
-        // $brand = $this->brandRepo->findByField('name', $request['brand']);
-        // $config = $this->configRepo->find(1);
-        // $product = $this->productRepo->rawByField("brand_id = ? and network = ? and storage = ? and model = ?", [$brand->id, $request['network'], $request['storage'], $request['model']]);
-
-        // if(empty($chkcustomer)){
-        //     $password = Str::random(10);
-        //     $customerRequest = [
-        //         'fname' => $request['fname'],
-        //         'lname' => $request['lname'],
-        //         'email' => $request['email'],
-        //         'password' => bcrypt($password),
-        //         'payment_method' => $request['payment_method'],
-        //         'account_username' => $request['account_username'],
-        //         'bank' => $request['bank'],
-        //         'account_name' => $request['account_name'],
-        //         'account_number' => $request['account_number']
-        //     ];
-        //     $customer = $this->customerRepo->create($customerRequest);
-        //     $addressRequest = [
-        //         'customer_id' => $customer->id,
-        //         'address1' => $request['address1'],
-        //         'address2' => $request['address2'],
-        //         'city' => $request['city'],
-        //         'state' => $request['state_id'],
-        //         'zip' => $request['zip_code'],
-        //         'phone' => $request['phone']
-        //     ];
-        //     $address = $this->addressRepo->create($addressRequest);
-        // }
-
-        // $parcel = $this->parcel($product);
-        // $shipment = $this->shipping($address, $parcel);
-        // // $ship = $shipment->buy($shipment->lowest_rate());
-
-        // // $makeRequest = [
-        // //     'customer_id' => isset($chkcustomer->id) ? $chkcustomer->id : $customer->id,
-        // //     'product_id' => $product->id,
-        // //     'amount' => $request['amount'],
-        // //     'payment_method' => $request['payment_method'],
-        // //     'account_username' => $request['account_username'],
-        // //     'account_bank' => $request['bank'],
-        // //     'account_name' => $request['account_name'],
-        // //     'account_number' => $request['account_number'],
-        // //     'shipping_label' => $ship->postage_label->label_url,
-        // //     'shipping_fee' => $ship->rates[0]->retail_rate,
-        // //     'tracking_code' => $ship->tracking_code,
-        // //     'carrier' => $ship->rates[0]->carrier,
-        // //     'delivery_days' => $ship->rates[0]->delivery_days
-        // // ];
-        // $makeRequest = [
-        //     'customer_id' => isset($chkcustomer->id) ? $chkcustomer->id : $customer->id,
-        //     'product_id' => $product->id,
-        //     'amount' => $request['amount'],
-        //     'payment_method' => $request['payment_method'],
-        //     'account_username' => $request['account_username'],
-        //     'account_bank' => $request['bank'],
-        //     'account_name' => $request['account_name'],
-        //     'account_number' => $request['account_number'],
-        //     'shipping_label' => 'For Approval',
-        //     'shipping_fee' => '10',
-        //     'tracking_code' => '1029282812891',
-        //     'carrier' => 'USPS',
-        //     'delivery_days' => '5'
-        // ];
-
-        // $this->deviceRepo->create($makeRequest);
-        // $email = $request['email'];
-        // $subject = "TronicsPay Email Confirmation";
-        // $data['header'] = "TronicsPay Email Confirmation";
-        // $data['fname'] = $request['fname'];
-        // $data['email'] = $request['email'];
-        // $data['password'] = $password;
-        // $data['company_email'] = $config->company_email;
-        // $data['model'] = $product->model;
-        // $content = view('mail.customer', $data)->render();
-        // Mailer::sendEmail($email, $subject, $content);
-        // $result = [
-        //     'model' => $product->model,
-        //     'fname' => $request['fname']
-        // ];
         // return redirect()->to('device')->with('result', json_encode($result));
+        // return $request->cart;
+
+
     }
 
 
