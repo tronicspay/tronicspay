@@ -1051,7 +1051,9 @@ class DeviceController extends Controller
 
                 $template = TemplateSms::where('name', 'Order Confirmation')->first();
                 if ($template && $template->status == 'Active') {
-                    app('App\Http\Controllers\GlobalFunctionController')->doSmsSending($order->customer->bill->phone, $template->content);
+
+                    $content = replaceSMSPlaceHolder($template->content, $data['order']);
+                    app('App\Http\Controllers\GlobalFunctionController')->doSmsSending($order->customer->bill->phone, $content);
                 }
             }
 
