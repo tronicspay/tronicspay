@@ -141,7 +141,7 @@ telInput.on("keyup change", reset);
                 if (response.status == 200) {
                     $('#checkoutCompleted').html(response.message);
                     $('#checkoutInProgress').html('');
-                    $('#checkoutTopSection').addClass('hideme');
+                    $('#checkoutTopSection').html('');
                     $('#checkoutCompletedSection').removeClass('hideme');
                     localStorage.clear();
                 } else if (response.status == 301) {

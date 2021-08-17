@@ -7,14 +7,16 @@
     <div class="container pt-50">
         <div class="row">
             <div class="col-lg-8">
-                <div class="row mb-3" id="checkoutTopSection">
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-body">
-                                @include('common.component.preloader.index')
-                                <div id="empty-cart" class="hideme" align="center"></div>
-                                <div id="my-cart-details" class="hideme"></div>
+                <div id="checkoutTopSection">
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    @include('common.component.preloader.index')
+                                    <div id="empty-cart" class="hideme" align="center"></div>
+                                    <div id="my-cart-details" class="hideme"></div>
 
+                                </div>
                             </div>
                         </div>
                     </div>
