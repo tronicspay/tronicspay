@@ -1057,7 +1057,7 @@ class DeviceController extends Controller
                 }
             }
 
-            //Mailer::sendEmail($email, $subject, $content);
+            Mailer::sendEmail($email, $subject, $content);
         }
         return $response;
 
