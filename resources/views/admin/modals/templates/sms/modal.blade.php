@@ -45,7 +45,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <textarea name="content" rows="4" cols="" class="form-control form-control-sm" id="modal_smstemplate_content" placeholder="Template Message:" maxlength="360" data-attr="Message"></textarea>
+                            <textarea name="content" rows="4" cols="" class="form-control form-control-sm" id="modal_smstemplate_content" placeholder="Template Message:" maxlength="600" data-attr="Message"></textarea>
                             <div id="modal_smstemplate_content_counter"></div>
                         </div>
                         <div class="row">

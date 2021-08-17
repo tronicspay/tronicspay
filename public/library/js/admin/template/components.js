@@ -1,6 +1,6 @@
 var baseUrl = $('body').attr('data-url');
 
-let sms_content = 360;
+let sms_content = 600;
 let counter_color = '';
 
 $(function () {
@@ -232,7 +232,7 @@ function processCounter (strProperty)
 {
     var text_length = $(strProperty).val().length;
     var text_remaining = sms_content - text_length;
-    if (text_remaining <= 360 && text_remaining > 50) {
+    if (text_remaining <= 600 && text_remaining > 50) {
         counter_color = 'text-green';
     } else if (text_remaining <= 50 && text_remaining > 10) {
         counter_color = 'text-yellow';
