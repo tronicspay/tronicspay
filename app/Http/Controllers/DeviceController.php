@@ -1038,7 +1038,7 @@ class DeviceController extends Controller
                                         Please check your email and login at <a href="../customer/auth/login">Member Login</a>.
                                         </p>
                                         <p>
-                                        Print <a href="' . $shipping_label_url . '">your shipping label</a>
+                                        Print <a href="' . $shipping_label_url . '" target="_blank">your shipping label</a>
                                         </p>' . $credentials_HTML . ' 
                                     </div>
                                     </div>

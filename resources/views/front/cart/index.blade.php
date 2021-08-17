@@ -7,7 +7,7 @@
     <div class="container pt-50">
         <div class="row">
             <div class="col-lg-8">
-                <div class="row  mb-3">
+                <div class="row mb-3" id="checkoutTopSection">
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-body">
@@ -255,6 +255,7 @@
 
         }
     });
+
 </script>
 <!-- END Cart page script -->
 <!-- Checkout page scripts -->
@@ -291,25 +292,25 @@
      *   Telephone input
      *
      */
-    var telInput = $("#phone"),
-        errorMsg = $("#error-msg"),
-        validMsg = $("#valid-msg");
+    var telInput = $("#phone")
+        , errorMsg = $("#error-msg")
+        , validMsg = $("#valid-msg");
 
     telInput.intlTelInput({
-        allowExtensions: true,
-        formatOnDisplay: true,
-        autoFormat: true,
-        autoHideDialCode: true,
-        autoPlaceholder: true,
-        defaultCountry: "us",
+        allowExtensions: true
+        , formatOnDisplay: true
+        , autoFormat: true
+        , autoHideDialCode: true
+        , autoPlaceholder: true
+        , defaultCountry: "us",
         // ipinfoToken: "yolo", 
-        nationalMode: false,
-        numberType: "MOBILE",
-        onlyCountries: ['us', 'ca'],
-        preferredCountries: [],
-        preventInvalidNumbers: true,
-        separateDialCode: true,
-        initialCountry: "us",
+        nationalMode: false
+        , numberType: "MOBILE"
+        , onlyCountries: ['us', 'ca']
+        , preferredCountries: []
+        , preventInvalidNumbers: true
+        , separateDialCode: true
+        , initialCountry: "us",
         // geoIpLookup: function(callback) {
         //     $.get("http://ipinfo.io", function() {}, "jsonp").always(function(resp) {
         //         var countryCode = (resp && resp.country) ? resp.country : "";
@@ -348,34 +349,34 @@
             const terms_and_condition = document.getElementById('terms-and-condition');
             if (!terms_and_condition.checked) {
                 swal({
-                    title: "Did not agree to terms and conditions",
-                    text: "Please agree to terms and conditions",
-                    icon: "info",
-                    buttons: "Close",
-                });
+                    title: "Did not agree to terms and conditions"
+                    , text: "Please agree to terms and conditions"
+                    , icon: "info"
+                    , buttons: "Close"
+                , });
                 e.preventDefault();
                 return;
             }
             $('#btn-checkout-loader').removeClass('hideme');
             $('#btn-checkout').addClass('hideme');
             var obj = {
-                '_token': '',
-                'fname': '',
-                'lname': '',
-                'address1': '',
-                'address2': '',
-                'city': '',
-                'state_id': '',
-                'zip_code': '',
-                'email': '',
-                'phone': '',
-                'payment_method': '',
-                'account_username': '',
-                'bank': '',
-                'account_name': '',
-                'account_number': '',
-                'insurance_optin': '',
-                'cart': null
+                '_token': ''
+                , 'fname': ''
+                , 'lname': ''
+                , 'address1': ''
+                , 'address2': ''
+                , 'city': ''
+                , 'state_id': ''
+                , 'zip_code': ''
+                , 'email': ''
+                , 'phone': ''
+                , 'payment_method': ''
+                , 'account_username': ''
+                , 'bank': ''
+                , 'account_name': ''
+                , 'account_number': ''
+                , 'insurance_optin': ''
+                , 'cart': null
             };
             jQuery.each($(this).serializeArray(), function(i, field) {
                 if (has(obj, field.name)) {
@@ -390,11 +391,11 @@
 
             obj['cart'] = JSON.parse(decryptData(localStorage.getItem("sessionCart")));
             $.ajax({
-                type: "POST",
-                url: "{{ url('device') }}",
-                data: obj,
-                dataType: "json",
-                success: function(response) {
+                type: "POST"
+                , url: "{{ url('device') }}"
+                , data: obj
+                , dataType: "json"
+                , success: function(response) {
                     console.log(response);
                     if (response.status == 200) {
                         $('#checkoutCompleted').html(response.message);
@@ -404,20 +405,20 @@
                         localStorage.clear();
                     } else if (response.status == 301) {
                         swal({
-                            title: "Congratulations!",
-                            text: response.message,
-                            icon: "success",
-                            buttons: "Close",
-                        })
+                            title: "Congratulations!"
+                            , text: response.message
+                            , icon: "success"
+                            , buttons: "Close"
+                        , })
                         window.location.href = '../' + response.redirectTo;
                         localStorage.clear();
                     } else {
                         swal({
-                            title: "Oops!",
-                            text: response.message,
-                            icon: "warning",
-                            buttons: "Close",
-                        })
+                            title: "Oops!"
+                            , text: response.message
+                            , icon: "warning"
+                            , buttons: "Close"
+                        , })
                         $('#btn-checkout').removeClass('hideme');
                     }
                     $('#btn-checkout-loader').addClass('hideme');
@@ -433,13 +434,13 @@
                 '</div>'
             );
             $.ajax({
-                type: "POST",
-                url: "{{ url('products/sell/payment-method') }}",
-                data: {
+                type: "POST"
+                , url: "{{ url('products/sell/payment-method') }}"
+                , data: {
                     payment: payment
-                },
-                dataType: "json",
-                success: function(response) {
+                }
+                , dataType: "json"
+                , success: function(response) {
                     $('#payment-row').html(response.content);
                 }
             });
@@ -449,6 +450,7 @@
     function has(object, key) {
         return object ? hasOwnProperty.call(object, key) : false;
     }
+
 </script>
 @endsection
 
@@ -465,5 +467,6 @@
         font-size: 18px;
         font-weight: bold;
     }
+
 </style>
 @endsection
