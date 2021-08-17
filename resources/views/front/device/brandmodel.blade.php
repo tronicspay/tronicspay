@@ -12,7 +12,13 @@
                             <div class="medias" id="condition-div">
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <img src="{{ url($product->photo->photo) }}" class="mr-3 img-fluid" id="device-image">
+                                        <h4 class="p-2">{{$product->model }}</h4>
+                                        <div class="py-4 text-center">
+                                            <img src="{{ url($product->photo->photo) }}" class="img-fluid" id="device-image">
+                                        </div>
+                                        <div class="p-4">
+                                            {!!$product->description !!}
+                                        </div>
                                     </div>
                                     <div class="col-md-8">
                                         <div class="row">
@@ -239,6 +245,7 @@
         padding: 0px 8px;
         font-size: 14px;
     }
+
 </style>
 @endsection
 
@@ -277,13 +284,13 @@
         var network_id = null;
         if (product_id) {
             $.ajax(`${link}/${product_id}`, {
-                method: "GET",
-                success: res => {
+                method: "GET"
+                , success: res => {
                     specs = res.specs;
                     network_section_loading_label.remove();
                     network_section.removeClass('d-none');
-                },
-                error: err => {}
+                }
+                , error: err => {}
             })
         }
 
@@ -313,9 +320,12 @@
         });
 
         $('.radio-device').change(function() {
-            var brand = '<?php echo ($status == 200) ? $brand : '' ?>';
-            var network = '<?php echo ($status == 200) ? $product->hashedid : '' ?>';
-            var id = '<?php echo ($status == 200) ? $product->hashedid : '' ?>';
+            var brand = '<?php echo ($status == 200) ? $brand : '
+            ' ?>';
+            var network = '<?php echo ($status == 200) ? $product->hashedid : '
+            ' ?>';
+            var id = '<?php echo ($status == 200) ? $product->hashedid : '
+            ' ?>';
             condition = this.value;
             condition_status.removeClass('d-none');
             showDescription();
@@ -413,28 +423,29 @@
                     storedItemObj.push({
                         'cart_id': JSON.parse(decryptData(localStorage.getItem("sessionCart"))).length + 1,
                         // 'amount' : $('#device-amount').html().replace("<b>$", "").replace("</b>", "").replace(",", ""), 
-                        'amount': $('#cash-offer').html().replace('$', ''),
-                        'storage': $('input[name=storage]:checked').val(),
-                        'network': network_id,
-                        'brand': $('#device-content').attr('data-brand'),
-                        'device_type': $('.radio-device:checked').val(),
-                        'model': '{{ $model }}',
-                        'quantity': 1,
-                        'carrier_id': $('.btn-carrier.active').attr('data-attr-id')
+                        'amount': $('#cash-offer').html().replace('$', '')
+                        , 'storage': $('input[name=storage]:checked').val()
+                        , 'network': network_id
+                        , 'brand': $('#device-content').attr('data-brand')
+                        , 'device_type': $('.radio-device:checked').val()
+                        , 'model': '{{ $model }}'
+                        , 'quantity': 1
+                        , 'carrier_id': $('.btn-carrier.active').attr('data-attr-id')
                     });
                 }
                 localStorage.setItem("sessionCart", encryptData(JSON.stringify(storedItemObj)));
             } else {
                 sessionCart.push({
-                    'cart_id': 1,
-                    'amount': $('#cash-offer').html().replace('$', ''),
-                    'storage': $('input[name=storage]:checked').val(),
-                    'network': network_id,
-                    'brand': '<?php echo ($status == 200) ? $brand : '' ?>',
-                    'device_type': $('.radio-device:checked').val(),
-                    'model': '{{ $model }}',
-                    'quantity': 1,
-                    'carrier_id': $('.btn-carrier.active').attr('data-attr-id')
+                    'cart_id': 1
+                    , 'amount': $('#cash-offer').html().replace('$', '')
+                    , 'storage': $('input[name=storage]:checked').val()
+                    , 'network': network_id
+                    , 'brand': '<?php echo ($status == 200) ? $brand : '
+                    ' ?>'
+                    , 'device_type': $('.radio-device:checked').val()
+                    , 'model': '{{ $model }}'
+                    , 'quantity': 1
+                    , 'carrier_id': $('.btn-carrier.active').attr('data-attr-id')
                 });
                 localStorage.setItem("sessionCart", encryptData(JSON.stringify(sessionCart)));
             }
@@ -458,13 +469,13 @@
                 '</div>'
             );
             $.ajax({
-                type: "POST",
-                url: "{{ url('products/sell/payment-method') }}",
-                data: {
+                type: "POST"
+                , url: "{{ url('products/sell/payment-method') }}"
+                , data: {
                     payment: payment
-                },
-                dataType: "json",
-                success: function(response) {
+                }
+                , dataType: "json"
+                , success: function(response) {
                     $('#payment-row').html(response.content);
                 }
             });
@@ -482,14 +493,14 @@
         $('#device-content').attr('data-network', name);
         $('#header').html(brand + ' / ' + name);
         $.ajax({
-            type: "POST",
-            url: "{{ url('products/network') }}",
-            data: {
-                brand: brand,
-                network: name
-            },
-            dataType: "json",
-            success: function(response) {
+            type: "POST"
+            , url: "{{ url('products/network') }}"
+            , data: {
+                brand: brand
+                , network: name
+            }
+            , dataType: "json"
+            , success: function(response) {
                 $('#row-devices').html(response.content);
             }
         });
@@ -501,17 +512,17 @@
         var network = $('#device-content').attr('data-network');
         $('#device-content').attr('data-id', id);
         $.ajax({
-            type: "POST",
-            url: "{{ url('products/model') }}",
-            data: {
-                id: id,
-                brand_id: brand,
-                network: network,
-                device_type: $('input[name=device_type]:checked').val(),
-                storage: $('input[name=storage]:checked').val()
-            },
-            dataType: "json",
-            success: function(response) {
+            type: "POST"
+            , url: "{{ url('products/model') }}"
+            , data: {
+                id: id
+                , brand_id: brand
+                , network: network
+                , device_type: $('input[name=device_type]:checked').val()
+                , storage: $('input[name=storage]:checked').val()
+            }
+            , dataType: "json"
+            , success: function(response) {
                 $('#header').html(brand + ' / ' + network + ' / ' + response.product.model);
                 $('#row-devices').slideUp();
                 $('#row-checkout').fadeIn();
@@ -530,21 +541,24 @@
     }
 
     function storage(id) {
-        var brand = '<?php echo ($status == 200) ? $brand : '' ?>';
-        var network = '<?php echo ($status == 200) ? $product->hashedid : '' ?>';
-        var id = '<?php echo ($status == 200) ? $product->hashedid : '' ?>';
+        var brand = '<?php echo ($status == 200) ? $brand : '
+        ' ?>';
+        var network = '<?php echo ($status == 200) ? $product->hashedid : '
+        ' ?>';
+        var id = '<?php echo ($status == 200) ? $product->hashedid : '
+        ' ?>';
         $.ajax({
-            type: "POST",
-            url: "{{ url('products/model/filter') }}",
-            data: {
-                id: id,
-                brand_id: brand,
-                network: network,
-                device_type: $('.radio-device:checked').val(), // $('.radio-device:checked').val(),
+            type: "POST"
+            , url: "{{ url('products/model/filter') }}"
+            , data: {
+                id: id
+                , brand_id: brand
+                , network: network
+                , device_type: $('.radio-device:checked').val(), // $('.radio-device:checked').val(),
                 storage: $('input[name=storage]:checked').val()
-            },
-            dataType: "json",
-            success: function(response) {
+            }
+            , dataType: "json"
+            , success: function(response) {
                 $('#condition').html(response.condition);
                 // $('#device-amount').html('<b>$'+response.amount+'</b>');
             }
@@ -554,5 +568,6 @@
     $("#remove-sizes").on("click", function() {
         $("#device-storage").empty();
     });
+
 </script>
 @endsection
