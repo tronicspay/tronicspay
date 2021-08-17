@@ -53,14 +53,14 @@
                         <p>Products Order</p>
                     </a>
                 </li>
-                <li class="nav-item has-treeview"> 
+                <li class="nav-item has-treeview">
                     <a href="https://dashboard.tawk.to/" class="nav-link" target="_blank">
                         <i class="nav-icon fas fa-headset"></i>
                         <p>Live Chat</p>
                     </a>
                 </li>
                 <li class="nav-item has-treeview">
-                    <a href="https://tronicspay.com/support/staff" class="nav-link" target="_blank">
+                    <a href="https://support.tronicspay.com/staff/login" class="nav-link" target="_blank">
                         <i class="nav-icon fas fa-comment-dots"></i>
                         <p>Tickets</p>
                     </a>
