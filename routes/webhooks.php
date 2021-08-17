@@ -20,42 +20,45 @@ Route::post('/webhooks/twilio', function (Request $request) {
     switch ($command) {
         case '#support':
 
-            $order_no = strtoupper($segments[1]);
-            $order = Order::with('customer.bill')->where('order_no', $order_no)->first();
+            if (count($segments) > 1) {
 
-            if ($order && $order->customer->bill->phone == $request->From) {
+                $order_no = strtoupper($segments[1]);
+                $order = Order::with('customer.bill')->where('order_no', $order_no)->first();
 
-                OrderNote::create([
-                    'order_id' => $order->id,
-                    'customer_id' => $order->customer->id,
-                    'notes' => trim(str_replace([$segments[0], $segments[1]], '', $request->Body))
-                ]);
-            } else {
-                $orders = Order::whereHas('customer.bill', function ($query) use ($request) {
-                    $query->where('phone', $request->From);
-                })->where('status_id', '!=', '5')->where('status_id', '!=', '9')->get();
-
-                if (count($orders) == 1) {
-                    $order = $orders->first();
+                if ($order && $order->customer->bill->phone == $request->From) {
 
                     OrderNote::create([
                         'order_id' => $order->id,
                         'customer_id' => $order->customer->id,
-                        'notes' => trim(str_replace($segments[0], '', $request->Body))
+                        'notes' => trim(str_replace([$segments[0], $segments[1]], '', $request->Body))
                     ]);
                 } else {
+                    $orders = Order::whereHas('customer.bill', function ($query) use ($request) {
+                        $query->where('phone', $request->From);
+                    })->where('status_id', '!=', '5')->where('status_id', '!=', '9')->get();
 
-                    $order_numbers = "";
+                    if (count($orders) == 1) {
+                        $order = $orders->first();
 
-                    foreach ($orders as $order) {
-                        $order_numbers .= $order->order_no . PHP_EOL;
+                        OrderNote::create([
+                            'order_id' => $order->id,
+                            'customer_id' => $order->customer->id,
+                            'notes' => trim(str_replace($segments[0], '', $request->Body))
+                        ]);
+                    } else {
+
+                        $order_numbers = "";
+
+                        foreach ($orders as $order) {
+                            $order_numbers .= $order->order_no . PHP_EOL;
+                        }
+
+                        app('App\Http\Controllers\GlobalFunctionController')->doSmsSending(
+                            $request->From,
+                            'You have multiple orders. You need to specify which order by typing "#support order_no `Your message`".' . PHP_EOL .
+                                'Your order numbers:' . PHP_EOL . $order_numbers
+                        );
                     }
-
-                    app('App\Http\Controllers\GlobalFunctionController')->doSmsSending(
-                        $request->From,
-                        'You have multiple orders. You need to specify which order by typing "#support order_no `Your message`".' . PHP_EOL .
-                            'Your order numbers:' . PHP_EOL . $order_numbers
-                    );
                 }
             }
             break;
