@@ -605,13 +605,13 @@ class FrontPageController extends Controller
             $subTotal = 0;
             foreach ($request->sessionCart as $key => $value) {
                 $device_type = '';
-                if ($value['device_type'] == 1) {
+                if ($value['device_type'] == 'excellent_offer') {
                     $device_type = 'Excellent';
-                } else if ($value['device_type'] == 2) {
+                } else if ($value['device_type'] == 'good_offer') {
                     $device_type = 'Good';
-                } else if ($value['device_type'] == 3) {
+                } else if ($value['device_type'] == 'fair_offer') {
                     $device_type = 'Fair';
-                } else if ($value['device_type'] == 4) {
+                } else if ($value['device_type'] == 'poor_offer') {
                     $device_type = 'Broken';
                 }
 
