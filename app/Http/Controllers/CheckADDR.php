@@ -13,7 +13,7 @@ class CheckADDR extends Controller
 
         // this address will be verified
         $address_params = array(
-            "verifications"  => array("delivery"),
+            "verify"  => array("delivery"),
             "street1" => $_GET['street1'],
             "street2" => $_GET['street2'],
             "city"    => $_GET['city'],

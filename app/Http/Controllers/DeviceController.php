@@ -830,11 +830,11 @@ class DeviceController extends Controller
                 'parcel'       => $parcel
             ]);
 
-            if (count($shipment->rates) == 0) {
-                $response['status'] = 400;
-                $response['message'] = "No rates found on your location";
-                return $response;
-            }
+            // if (count($shipment->rates) == 0) {
+            //     $response['status'] = 400;
+            //     $response['message'] = "No rates found on your location";
+            //     return $response;
+            // }
 
 
             if (!$chkcustomer) {
