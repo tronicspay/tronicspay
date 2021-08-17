@@ -12,11 +12,11 @@
                             <div class="medias" id="condition-div">
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <h4 class="p-2">{{$product->model }}</h4>
+                                        <h4 class="p-2">{{ $product->brand->name }} {{ $product->model }}</h4>
                                         <div class="py-4 text-center">
                                             <img src="{{ url($product->photo->photo) }}" class="img-fluid" id="device-image">
                                         </div>
-                                        <div class="p-4">
+                                        <div class="p-3 border border-2 border-dark font-weight-bold">
                                             {!!$product->description !!}
                                         </div>
                                     </div>
