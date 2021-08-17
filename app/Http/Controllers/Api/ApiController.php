@@ -35,7 +35,7 @@ use Saperemarketing\Phpmailer\Facades\Mailer;
 use App\Http\Requests\Admin\UserRequest;
 use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Http\Requests\Admin\SettingsBrandRequest as BrandRequest;
-
+use App\Models\Admin\SettingsStatus;
 use Twilio\Rest\Client;
 
 class ApiController extends Controller
@@ -203,6 +203,7 @@ class ApiController extends Controller
                     'module' => $request['module'],
                     'badge' => $request['badge'],
                     'email_sending' => ($request['email_sending']) ? $request['email_sending'] : 'Disable',
+                    'template__sms_id' => $request['sms_template_id'],
                     'template' => ($request['template']) ? $request['template'] : ''
                 ];
                 $this->statusRepo->update($makeRequest, $id);
@@ -215,6 +216,7 @@ class ApiController extends Controller
                     'module' => $request['module'],
                     'default' => 0,
                     'email_sending' => ($request['email_sending']) ? $request['email_sending'] : 'Disable',
+                    'template__sms_id' => $request['sms_template_id'],
                     'template' => ($request['template']) ? $request['template'] : ''
                 ];
                 $this->statusRepo->create($makeRequest);
@@ -227,7 +229,7 @@ class ApiController extends Controller
     {
         $id = app('App\Http\Controllers\GlobalFunctionController')->decodeHashid($hashedId);
         $response['status'] = 200;
-        $response['model'] = $this->statusRepo->rawByField("id = ?", [$id]);
+        $response['model'] = $this->statusRepo->rawByWithField(['sms_template'], "id = ?", [$id]);
         return response()->json($response);
     }
 
@@ -264,11 +266,16 @@ class ApiController extends Controller
 
         //$status_package_delivered = $this->statusRepo->rawByField("name = ?", ['Package delivered']);
 
-        if ($request['sms_template_id']) {
-            $sms_template = $this->smsTemplateRepo->find($id);
-            if ($sms_template && $sms_template->status == 'Active') {
-                $this->doSmsSending($request['sms_template_id'], $id);
-            }
+        // if ($request['sms_template_id']) {
+        //     $sms_template = $this->smsTemplateRepo->find($id);
+        //     if ($sms_template && $sms_template->status == 'Active') {
+        //     }
+        // }
+
+        $status = SettingsStatus::with('sms_template')->find($request['status_id']);
+
+        if ($status->sms_template()->exists() && $status->sms_template->status == 'Active') {
+            $this->doSmsSending($status->sms_template, $id);
         }
 
         $makeRequest = ['status_id' => $request['status_id']];
@@ -903,54 +910,16 @@ To reply, type:
         return response()->json($output);
     }
 
-    private function replaceSMSPlaceHolder($str, $order_id)
+    private function doSmsSending($sms_template, $order_id)
     {
-        $order = $this->orderRepo->rawByWithField(['customer', 'status_details'], "id = ?", [$order_id]);
-        $string = $str;
-
-        $result = str_replace(
-            [
-                '{customer_name}',
-                '{customer_email}',
-                '{customer_password}',
-                '{order_shipping_label}',
-                '{order_tracking_number}',
-                '{order_transaction_id}',
-                '{order_no}'
-            ],
-            [
-                $order['customer']['fullname'],
-                $order['customer']['email'],
-                app('App\Http\Controllers\GlobalFunctionController')->decrypt($order['customer']['authtoken']),
-                url('order/' . $order['hashedId'] . '/shippinglabel'),
-                $order['tracking_code'],
-                $order['status_details']['name'],
-                $order['order_no'],
-            ],
-            $string
-        );
-        return $result;
-    }
-
-    private function doSmsSending($sms_template_id, $order_id)
-    {
-        if ($sms_template_id == 0) return false;
-
         if (app('App\Http\Controllers\GlobalFunctionController')->checkSMSFeatureIfActive() == false) return false;
-
-        $sms_template = $this->smsTemplateRepo->find($sms_template_id);
 
         $data['placeholder_customer_list'] = $this->tablelist->placeholder_customer_list;
         $data['placeholder_order_list'] = $this->tablelist->placeholder_order_list;
 
-        $message = $this->replaceSMSPlaceHolder($sms_template['content'], $order_id);
-
         $order = $this->orderRepo->rawByWithField(['customer', 'status_details'], "id = ?", [$order_id]);
 
-        $message .= '
-
-To reply, type:
-#support ' . $order->order_no . ' followed by your message';
+        $message = replaceSMSPlaceHolder($sms_template->content, $order);
 
         return app('App\Http\Controllers\GlobalFunctionController')->doSmsSending($order['customer']['bill']['phone'], $message);
     }

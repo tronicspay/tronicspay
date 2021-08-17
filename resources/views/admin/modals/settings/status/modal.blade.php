@@ -22,9 +22,15 @@
                             <label class="">Badge Design</label>
                             <select name="badge" class="custom-select select-sm" id="modal_dropdown_badge">
                                 @foreach($badges as $key => $val)
-                                    <option value="{{ $val }}">{{ $val }} <small class="badge {{ $val }}"><div class="w50px h5px"></div></small></option>
+                                <option value="{{ $val }}">{{ $val }} <small class="badge {{ $val }}">
+                                        <div class="w50px h5px"></div>
+                                    </small></option>
                                 @endforeach
                             </select>
+                        </div>
+                        <div class="form-group" id="modal_div_sms_template">
+                            <label class="col-form-label col-form-label-sm">Select SMS Template</label>
+                            <select name="sms_template_id" class="form-control form-control-sm" id="modal-status-select-template-sms"></select>
                         </div>
                         <div class="form-group hideme" id="modal_div_emailsending">
                             <label class="col-form-label col-form-label-sm">Enable Send Automatic Emails</label>
@@ -40,7 +46,7 @@
                     <input type="hidden" name="id" id="modal_status_id">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary" id="brand-submit">Save changes</button>
-                </div>      
+                </div>
             </form>
         </div>
     </div>

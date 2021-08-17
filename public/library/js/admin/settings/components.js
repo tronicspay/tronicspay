@@ -7,6 +7,21 @@ $(function () {
         $('#modal-status-form')[0].reset();
         $('#modal-status').modal();
         getDropdownOptionsStatic(baseUrl+'/api/modules', 'GET', 'modal_dropdown_module');
+
+        $('#modal-status-select-template-sms').html('<option value="">Please Select SMS Template</option>');
+
+        $.ajax({
+            type: "GET",
+            url: baseUrl+"/api/templates/sms",
+            dataType: "json",
+            success: function (response) {
+                if (response.status == 200) {
+                    $.each(response.model, function( index, value ) {
+                        $('#modal-status-select-template-sms').append('<option value="'+value.id+'">'+value.name+'</option>');
+                    });
+                }
+            }
+        });
         // getDropdownOptionsStatic(baseUrl+'/api/enableoptions', 'GET', 'modal_dropdown_enableoptions');
     });
 
@@ -133,11 +148,14 @@ function editStatus (hashedId)
     getDropdownOptionsStatic(baseUrl+'/api/modules', 'GET', 'modal_dropdown_module');
     getDropdownOptionsStatic(baseUrl+'/api/enableoptions', 'GET', 'modal_dropdown_enableoptions');
     $('#modal_status_id').val(hashedId);
+
+    $('#modal-status-select-template-sms').html('<option value="">Please Select SMS Template</option>');
+
 	$.ajax({
 		url: baseUrl+'/api/settings/status/'+hashedId,
 		type: "GET",
 		dataType: 'json',
-		success: function (result) 
+		success: function (result)
 		{
             if (result.status == 200) 
             {
@@ -155,7 +173,7 @@ function editStatus (hashedId)
                 if (result.model.template != "") {
                     $('#summernote').summernote('code', result.model.template);
                 }
-                
+                window.template__sms_id = result.model.template__sms_id;
                 $('#modal-status').modal();
             } else {
                 swalWarning ("Oops", "Status not found", "warning", "Close");
@@ -163,6 +181,23 @@ function editStatus (hashedId)
             }
 		}
 	});
+
+    $.ajax({
+        type: "GET",
+        url: baseUrl+"/api/templates/sms",
+        dataType: "json",
+        success: function (response) {
+            if (response.status == 200) {
+                $.each(response.model, function( index, value ) {
+                    if (window.template__sms_id == value.id) {
+                        $('#modal-status-select-template-sms').append('<option value="'+value.id+'" selected="selected">'+value.name+'</option>');
+                    } else {
+                        $('#modal-status-select-template-sms').append('<option value="'+value.id+'">'+value.name+'</option>');
+                    }
+                });
+            }
+        }
+    });
 }
 
 function deleteStatus (hashedId) 

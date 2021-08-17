@@ -27,6 +27,6 @@ class DatabaseSeeder extends Seeder
         $this->call(SettingsStatusSeeder::class);
         $this->call(PageBuildersSeeder::class);
         $this->call(PageMetaTagsSeeder::class);
-        
+        $this->call(SMSTemplateSeeder::class);
     }
 }
