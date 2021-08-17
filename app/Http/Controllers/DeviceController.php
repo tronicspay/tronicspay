@@ -27,6 +27,7 @@ use App\Repositories\Customer\CustomerTransactionRepositoryEloquent as CustomerT
 use App\Repositories\Admin\NetworkRepositoryEloquent as Network;
 use App\Models\Admin\Product as ModelProduct;
 use App\Models\Admin\ProductStorage as StorageProduct;
+use App\Models\Admin\TemplateSms;
 use App\Models\TableList as Tablelist;
 use Illuminate\Support\Facades\Auth;
 use PDF, DB;
@@ -1048,18 +1049,13 @@ class DeviceController extends Controller
 
             if (app('App\Http\Controllers\GlobalFunctionController')->checkSMSFeatureIfActive()) {
 
-                $message = 'Order number: ' . $order->order_no . '
-Shipping label: ' . $shipping_label_url . '
-Tracking number: ' . $order->tracking_code . '
-Tracking link: ' . $order->shipping_tracker . '
-
-Thank you for choosing and trusting TronicsPay.';
-
-                app('App\Http\Controllers\GlobalFunctionController')->doSmsSending($order->customer->bill->phone, $message);
+                $template = TemplateSms::where('name', 'Order Confirmation')->first();
+                if ($template && $template->status == 'Active') {
+                    app('App\Http\Controllers\GlobalFunctionController')->doSmsSending($order->customer->bill->phone, $template->content);
+                }
             }
 
-
-            Mailer::sendEmail($email, $subject, $content);
+            //Mailer::sendEmail($email, $subject, $content);
         }
         return $response;
 
@@ -1149,13 +1145,26 @@ Thank you for choosing and trusting TronicsPay.';
     {
         if (app('App\Http\Controllers\GlobalFunctionController')->checkSMSFeatureIfActive() == false) return false;
 
-        $message = 'Thank you for choosing TronicsPay. Your login credential is: 
-email: ' . $request['email'] . '
-password: ' . $request['authpw'] . '
-        
-Your verification code: ' . $request['verification_code'];
-        return app('App\Http\Controllers\GlobalFunctionController')->doSmsSending($phone, $message);
-        return true;
+        $template = TemplateSms::where('name', 'New User Registers')->first();
+
+        if ($template && $template->status == 'Active') {
+
+            $content = str_replace(
+                [
+                    '{email}',
+                    '{password}',
+                    '{verification_code}',
+                ],
+                [
+                    $request['email'],
+                    $request['authpw'],
+                    $request['verification_code']
+                ],
+                $template->content
+            );
+
+            return app('App\Http\Controllers\GlobalFunctionController')->doSmsSending($phone, $content);
+        }
     }
 
 

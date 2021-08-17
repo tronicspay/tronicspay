@@ -288,6 +288,7 @@ function replaceSMSPlaceHolder($content, Order $order)
       '{customer_password}',
       '{order_shipping_label}',
       '{order_tracking_number}',
+      '{order_tracking_link}',
       '{order_no}'
     ],
     [
@@ -296,6 +297,7 @@ function replaceSMSPlaceHolder($content, Order $order)
       app('App\Http\Controllers\GlobalFunctionController')->decrypt($order['customer']['authtoken']),
       url('order/' . $order['hashedId'] . '/shippinglabel'),
       $order['tracking_code'],
+      $order->shipping_tracker,
       $order['order_no']
     ],
     $content

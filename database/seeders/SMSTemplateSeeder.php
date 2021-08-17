@@ -15,6 +15,32 @@ class SMSTemplateSeeder extends Seeder
      */
     public function run()
     {
+        TemplateSms::firstOrCreate([
+            'name' => 'New User Registers',
+            'content' => 'Thank you for choosing TronicsPay. Your login credential is: 
+
+email: {email}
+password: {password}
+
+Your verification code: {verification_code}',
+            'receiver' => 'Customer',
+            'status' => 'Active',
+            'model' => 'Registration'
+        ]);
+
+        TemplateSms::firstOrCreate([
+            'name' => 'Order Confirmation',
+            'content' => 'Order number: {order_no}
+Shipping label: {order_shipping_label}
+Tracking number: {order_tracking_number}
+Tracking link: {order_tracking_link}
+
+Thank you for choosing and trusting TronicsPay.',
+            'receiver' => 'Customer',
+            'status' => 'Active',
+            'model' => 'Orders'
+        ]);
+
         $templates = ['Comment about order', 'On hold', 'Order complete', 'Package delivered', 'Order submitted', 'Shipping label created', 'Complete', 'Follow up', 'Failed', 'Reduced offer'];
 
         foreach ($templates as $template) {
