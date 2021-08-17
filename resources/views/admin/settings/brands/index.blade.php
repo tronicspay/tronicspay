@@ -123,6 +123,11 @@
                     });
                 }
             });
+
+            $(document).on('click', '#remove-image', function() {
+                $('#div-image').hide();
+                $('#image-file').show();
+            });
         });
 
         function updatebrand(id){
