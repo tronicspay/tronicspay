@@ -345,6 +345,16 @@
      *
      */
     $(function() {
+        // set cached customer information
+        var customerInformation = JSON.parse(localStorage.getItem('customer-information') || "{}");
+        Object.keys(customerInformation).forEach(function(name) {
+            $('#form-checkout [name='+ name +']').val(customerInformation[name]);
+        });
+        $(document).on('change', '#form-checkout [name]', function(e) {
+            customerInformation[e.target.name] = e.target.value;
+            localStorage.setItem('customer-information', JSON.stringify(customerInformation));
+        });
+
         $('#btn-checkout-loader, #checkoutCompletedSection').addClass('hideme');
         $(document).on('submit', '#form-checkout', function(e) {
             var countryCode = $('.selected-dial-code').html();
