@@ -827,7 +827,8 @@ class DeviceController extends Controller
             $shipment = Shipment::create([
                 'to_address'   => $to_address,
                 'from_address' => $from_address,
-                'parcel'       => $parcel
+                'parcel'       => $parcel,
+                'is_return'    => true
             ]);
 
             if (count($shipment->rates) == 0) {
