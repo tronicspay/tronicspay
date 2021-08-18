@@ -814,14 +814,14 @@ class DeviceController extends Controller
             $parcel = Parcel::create([
                 // 'predefined_package' => $this->package($product->height, $product->width),
                 // 'predefined_package' => 'LargeFlatRateBox',
-                'length' => $parcel_length,
-                'width' =>  $parcel_width,
-                'height' => $parcel_height,
-                'weight' => $total_weight,
-                // 'length' => 10,
-                // 'width' =>  10,
-                // 'height' => 10,
-                // 'weight' => 10,
+                // 'length' => $parcel_length,
+                // 'width' =>  $parcel_width,
+                // 'height' => $parcel_height,
+                // 'weight' => $total_weight,
+                'length' => 9,
+                'width' => 6,
+                'height' => 2,
+                'weight' => 10,
             ]);
 
             $shipment = Shipment::create([
