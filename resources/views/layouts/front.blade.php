@@ -54,9 +54,11 @@
 	@yield('page-css')
 </head>
 
-<body data-url="{{ url('/') }}">
+<body data-url="{{ url('/') }}" style="display: flex;flex-direction: column;">
 	@include('partial.front.navbar')
-	@yield('content')
+	<div style="flex-grow: 1;">
+		@yield('content')
+	</div>
 	<footer class="section-footer">
 		<div class="container">
 			<div class="row">

@@ -615,7 +615,7 @@ class FrontPageController extends Controller
                     $device_type = 'Broken';
                 }
 
-                $network = $this->networkRepo->find($value['cart_id']);
+                $network = $this->networkRepo->find($value['network']);
 
                 $brands = $this->brandRepo->findByField('name', $value['brand']);
                 $product = $this->productRepo->rawWith(['photo'], "brand_id = ? and model = '" . $value["model"] . "'", [$brands['id']])->first();
