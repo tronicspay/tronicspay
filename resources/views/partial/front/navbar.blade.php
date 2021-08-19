@@ -11,8 +11,7 @@
         <div class="collapse navbar-collapse" id="navbar4">
             <ul class="navbar-nav mr-auto pl-lg-4">
                 <li class="nav-item px-lg-2 ">
-
-                    <a href="{{ url('/') }}" aria-current="page" class="{{ navactive('/') }}" target="_self">{{ url()->current() == url('/') ? 'Sell' : 'Home' }}</a>
+                    <a href="{{ url('/') }}" aria-current="page" class="{{ navactive('/') }}" target="_self">Sell</a>
                 </li>
                 <li class="nav-item px-lg-2">
                     <a href="https://buy.tronicspay.com" class="nav-link" target="_self">Buy</a>
