@@ -12,18 +12,12 @@
             <ul class="navbar-nav mr-auto pl-lg-4">
                 <li class="nav-item px-lg-2 ">
 
-                    <a href="{{ url('/') }}" aria-current="page" class="{{ navactive('/') }}" target="_self">Home</a>
+                    <a href="{{ url('/') }}" aria-current="page" class="{{ navactive('/') }}" target="_self">{{ url()->current() == url('/') ? 'Sell' : 'Home' }}</a>
                 </li>
                 <li class="nav-item px-lg-2">
-                    <a href="{{ url('about-us') }}" class="{{ navactive('about-us') }}" target="_self">About Us</a>
+                    <a href="https://buy.tronicspay.com" class="nav-link" target="_self">Buy</a>
                 </li>
 
-                <li class="nav-item px-lg-2">
-                    <a href="{{ url('how-it-works') }}" class="{{ navactive('how-it-works') }}" target="_self">How It Works</a>
-                </li>
-                <li class="nav-item px-lg-2">
-                    <a href="{{ url('contact-us') }}" class="{{ navactive('contact-us') }}" target="_self">Contact Us</a>
-                </li>
                 <li class="nav-item px-lg-2">
                     <a href="https://support.tronicspay.com" class="{{ navactive('support') }}" target="_self">Help</a>
                 </li>
