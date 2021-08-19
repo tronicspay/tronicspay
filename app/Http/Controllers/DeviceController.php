@@ -810,6 +810,7 @@ class DeviceController extends Controller
 
 
 
+
             $parcel = Parcel::create([
                 // 'predefined_package' => $this->package($product->height, $product->width),
                 // 'predefined_package' => 'LargeFlatRateBox',
@@ -1051,8 +1052,8 @@ class DeviceController extends Controller
                 $template = TemplateSms::where('name', 'Order Confirmation')->first();
                 if ($template && $template->status == 'Active') {
 
-                    $content = replaceSMSPlaceHolder($template->content, $data['order']);
-                    app('App\Http\Controllers\GlobalFunctionController')->doSmsSending($order->customer->bill->phone, $content);
+                    $message = replaceSMSPlaceHolder($template->content, $data['order']);
+                    app('App\Http\Controllers\GlobalFunctionController')->doSmsSending($order->customer->bill->phone, $message);
                 }
             }
 
