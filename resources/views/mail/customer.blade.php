@@ -133,6 +133,7 @@
         .font12 {
             font-size: 12px;
         }
+
     </style>
 </head>
 
@@ -162,17 +163,17 @@
                                         <tr style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                             <td class="content-block" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
                                                 <p class="font12">
-                                                    Howdy {{ $fname }},<br><br>
+                                                    Howdy {{ $fname }} {{ $lname }},<br><br>
                                                     We're excited that you've decided to sell your device to TronicsPay.
 
                                                     We currently reviewing your application and we will get back to you as soon as possible.
 
-                                                    To print your free shipping label you can click <a href="" target="_blank">here</a>.
+                                                    To print your free shipping label you can click <a clicktracking="off" href="{{ url('order/'.$order['hashedId'].'/shippinglabel') }}" target="_blank">here</a>.
                                                 </p>
                                                 <?php if ($isRegistered == false) { ?>
-                                                    <p class="font12">
-                                                        We also created an account for you, you can login at <a href="{{ url('customer/auth/login') }}" target="_blank">Member Login</a> using these email {{ $email }} with the password <b>{{ $password }}</b>.
-                                                    </p>
+                                                <p class="font12">
+                                                    We also created an account for you, you can login at <a href="{{ url('customer/auth/login') }}" target="_blank">Member Login</a> using these email {{ $email }} with the password <b>{{ $password }}</b>.
+                                                </p>
                                                 <?php } ?>
                                                 <p>
                                                     <span class="page-sub-header">Shipping to TronicsPay:</span>
@@ -219,7 +220,7 @@
                                                                 </td>
                                                                 <td width="97%">
                                                                     5. Pack your item in the box with plenty of packing materials. Tape your prepaid shipping label to the box.
-                                                                    To print your prepaid shipping label go <a clicktracking="off" href="{{ url('order/'.$order['hashedId'].'/shippinglabel') }}" target="_blank">here</a>. <br />
+                                                                    To print your prepaid shipping label click <a clicktracking="off" href="{{ url('order/'.$order['hashedId'].'/shippinglabel') }}" target="_blank">here</a>. <br />
                                                                     Feel free to include any orginal boxes, accessories, and chargers in your shipment.
                                                                 </td>
                                                             </tr>
@@ -305,10 +306,10 @@
                                                 <br />
                                                 <p class="font12">
                                                     We'll let you know as soon as we receive your item. If you have any questions along the way, you can
-                                                    <a href="https://www.tronicspay.com/track-my-order" target="_blank">
+                                                    <a href="{{$order['shipping_tracker']}}" target="_blank">
                                                         check the status of your item on our website
                                                     </a> or
-                                                    <a href="{{ url('/faq') }}" target="_blank">
+                                                    <a href="https://support.tronicspay.com" target="_blank">
                                                         visit our help center.
                                                     </a>
                                                 </p>

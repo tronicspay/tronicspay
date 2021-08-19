@@ -348,7 +348,7 @@
         // set cached customer information
         var customerInformation = JSON.parse(localStorage.getItem('customer-information') || "{}");
         Object.keys(customerInformation).forEach(function(name) {
-            $('#form-checkout [name='+ name +']').val(customerInformation[name]);
+            $('#form-checkout [name=' + name + ']').val(customerInformation[name]);
         });
         $(document).on('change', '#form-checkout [name]', function(e) {
             customerInformation[e.target.name] = e.target.value;
@@ -414,6 +414,8 @@
                         $('#checkoutInProgress').html('');
                         $('#my-cart-details').html('');
                         $('#checkoutCompletedSection').removeClass('hideme');
+                        $('#my-cart-details').parent().parent().addClass('hideme');
+
                         localStorage.clear();
                     } else if (response.status == 301) {
                         swal({

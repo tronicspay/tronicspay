@@ -968,6 +968,7 @@ class DeviceController extends Controller
             }
             $email = $request['email'];
             $data['fname'] = $request['fname'];
+            $data['lname'] = $request['lname'];
             $data['email'] = $request['email'];
             $data['password'] = $password;
             $data['company_email'] = $config->company_email;
