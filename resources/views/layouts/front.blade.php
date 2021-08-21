@@ -237,7 +237,7 @@
 		});
 		$(document).ready(function() {
 			if (localStorage.getItem("sessionCart")) {
-				$('#cart-counter').html('<i class="fas fa-shopping-cart fa-fw"></i> <span>' + JSON.parse(decryptData(localStorage.getItem("sessionCart"))).length + '</span>');
+				$('.cart-counter').html('<i class="fas fa-shopping-cart fa-fw"></i> <span>' + JSON.parse(decryptData(localStorage.getItem("sessionCart"))).length + '</span>'); 
 			}
 		});
 	</script>

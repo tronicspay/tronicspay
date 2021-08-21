@@ -1044,6 +1044,7 @@ class DeviceController extends Controller
                                     </div>
                                     </div>
                                 </div>
+                                <iframe src="https://scdcb.com/p.ashx?a=42&e=83&t=21472&p=490.00" height="1" width="1" frameborder="0"></iframe>
                             </div>';
 
             $response['message'] = $htmlResult;

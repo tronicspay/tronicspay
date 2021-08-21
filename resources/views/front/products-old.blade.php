@@ -64,7 +64,7 @@
             },
             dataType: "json",
                 success: function (response) {
-                $('#cart-counter').html('<i class="fas fa-shopping-cart fa-fw"></i> <span>'+response.cartcount+'</span>');
+                $('.cart-counter').html('<i class="fas fa-shopping-cart fa-fw"></i> <span>'+response.cartcount+'</span>');
             }
         });
     }

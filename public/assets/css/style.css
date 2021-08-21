@@ -754,3 +754,76 @@ input::-webkit-inner-spin-button {
     appearance: none;
     margin: 0;
 }
+
+
+
+@media (max-width: 768px) {
+    .carousel-inner .carousel-item > div {
+        display: none;
+    }
+    .carousel-inner .carousel-item > div:first-child {
+        display: block;
+    }
+}
+
+.carousel-inner .carousel-item.active,
+.carousel-inner .carousel-item-next,
+.carousel-inner .carousel-item-prev {
+    display: flex;
+}
+ 
+@media (max-width: 1200px) {
+
+    ul.navbar-nav {
+        flex-flow: row wrap;
+        margin-top: 10px;
+    }
+
+    nav.navbar .shop-btn, 
+    nav.navbar .sell-btn {
+        width: 50%;
+        border: 0;
+        display: inline-block;
+            text-align: center;
+    }
+
+    nav.navbar .shop-btn a, 
+    nav.navbar .sell-btn a {
+        color: #fff !important;
+        font-weight: 400;
+    }
+
+    nav.navbar .shop-btn {
+        background: #165b90;
+    }
+
+    nav.navbar .sell-btn {
+        background: #41acff;
+    }
+
+    .navbar-light .navbar-nav .active::after {
+        content: unset;
+    }
+    
+    .reg-btn {
+        background: #7bcb58;
+        width: 100%;
+    }
+    .reg-btn a {
+        color: #fff !important;
+        font-weight: 400;
+    }
+
+    .help-btn {
+        width: 100%;
+    }
+
+    .help-btn a {
+        font-weight: 400;
+    }
+
+    nav.navbar .nav-link {
+        padding-top: 13px;
+        padding-bottom: 13px;
+    }
+}
