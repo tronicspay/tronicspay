@@ -138,7 +138,7 @@
 						<h4 class="footer-subtitle">Subscribe</h4>
 					</div>
 					<div class="top-margin social-column  fontGray2-5 font14px">
-						Don't miss to subscribe to our new feeds, kindly fill the form below.
+						By clicking “Subscribe”, you agree to receive our newsletter about our website, special offers and promos. You can opt-out at any time.
 						<br />
 
 

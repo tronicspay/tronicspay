@@ -530,7 +530,7 @@ strong {
         padding: 0px; /*18px 0px;*/
     }
     .search-input {
-        width: 100%;
+        width: 100% !important;
         margin: 0 auto;
     }
     .img-payment {
@@ -644,8 +644,12 @@ strong {
     .tronics-header {
         padding: 18px 0px;
     }
+
+    #s-r-parent {
+        width: 45% !important;
+    }
     .search-input {
-        width: 45%;
+        width: 45% !important;
         margin: 0 auto;
     }
     .img-payment {

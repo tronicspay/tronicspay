@@ -1,19 +1,18 @@
 @extends('layouts.front')
 @section('content')
-<div class="pt-70" id="device-content" data-brand="{{ $brand }}">
+<div class="pt-70" id="device-content" data-brand="">
     @if($chkproduct)
     <section>
         <div class="container pb-50">
             <div style="padding-top: 15px; display: block;">
-                <h2 id="header">{{ $brand }}</h2>
+                <h2 id="header">Search results</h2>
                 <div class="row no-gutters mx-1 mt-2 mb-4" id="row-filters">
                 
                 </div>
                 <div class="row" id="row-devices">
                     @if(count($products) > 0)
                     @foreach($products as $key => $val)
-                    <div class="col-md-4 col-6 col-lg-3 mb-4 prod-item" data-model="{{ $val->model }}">
-                        <!-- <a href="{{ url('products/'.$brand.'/'.$val->model.'') }}"> -->
+                    <div class="col-md-4 col-6 col-lg-3 mb-4 prod-item" data-model="{{ $val->model }}" data-brand="{{ $val->brand->name }}">
                         <div class="card tronics" style="min-height: 15rem; max-height: 15rem;">
                             <div class="card-body tronics-wrap d-flex align-items-center justify-content-center">
                                 <div class="text-center">
@@ -22,7 +21,7 @@
                                     @endif
                                     <h3 class="product-name">{{ $val->model }}</h3>
                                     <div class="tronics-links">
-                                        <a href="{{ url('products/'.$brand.'/'.$val->model.'') }}" class="btn btn-warning btn-sm">Get an Offer</a>
+                                        <a href="{{ url('products/'. $val->brand->name . '/' . $val->model .'') }}" class="btn btn-warning btn-sm">Get an Offer</a>
                                         <!-- <a href="javascript:void(0)" data-attr-id="{{ $val->hashedid }}" data-attr-model="{{ $val->model }}" class="btn btn-warning btn-sm btn-get-offer">Get an Offer</a> -->
                                     </div>
                                 </div>
@@ -197,11 +196,11 @@
     @else
     <section>
         <div class="container pt-70 pb-50">
-            <h2 id="header">{{ $brand }}</h2>
+            <h2 id="header">Search resullts</h2>
             <div class="row" id="row-network" style="padding-top: 15px;">
                 <div class="col-md-12">
-                    <div class="alert alert-danger" role="alert">
-                        No available devices for {{ $brand }}. Please try other brand.
+                    <div class="alert " role="alert">
+                        No available devices for this query. <a href="https://tronicspay.com">Go back<a>.
                     </div>
                 </div>
             </div>
@@ -244,9 +243,13 @@
 
 @section('page-js')
 {!! JsValidator::formRequest('App\Http\Requests\SellRequest') !!}
+
+
+@if($brand)
 <script>
 
-    if ("{{$brand}}" === "Smart Watch") {
+    
+    if ( "{{$brand}}" === "Smart Watch") {
 
         const filtersEl = document.querySelector("#row-filters")
 
@@ -319,14 +322,18 @@
         }
     }
 </script>
+@endif
 <script>
 
     $(document).ready(function() {
         $('.btn-get-offer').on('click', function() {
 
+
             var id = $(this).attr('data-attr-id');
+            var brand = $(this).attr('data-attr-brand');
+            document.querySelector("#device-content").dataset['brand'] = brand
             $('#row-devices').fadeOut();
-            var brand = $('#device-content').attr('data-brand');
+            // var brand = $('#device-content').attr('data-brand');
             var model = $(this).attr('data-attr-model');
             $('head').append('<meta property="og:title" content="' + brand + ' ' + model + ' - TronicsPay" />');
 

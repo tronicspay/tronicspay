@@ -134,6 +134,57 @@ class DeviceController extends Controller
         return view('front.device.checkout', $data);
     }
 
+    public function checkoutsearch(Request $request)
+    {
+            
+            $q = $request->query('q');
+            $data['isValidAuthentication'] = (Auth::guard('customer')->check() != null) ? true : false;
+            $data['brand'] = "";
+            $data['stateList'] = $this->stateRepo->selectlist('name', 'abbr');
+            $data['paymentList'] = $this->tablelist->payment_list;
+            // $brandDetails = $this->brandRepo->findByField('name', $brand);
+            $data['networks'] =  $this->productRepo->queryTable()->whereRaw("status = 'active' AND device_type IN ('Buy', 'Both')")->groupBy('network')->get();
+            // $data['brandDetails'] = $brandDetails;
+            $allProducts = ModelProduct::with(['photo'])
+            ->where('model', "like", "%12%")
+            ->orderBy('priority', 'asc')
+            ->get();
+            $data['products'] = [];
+
+ 
+            foreach ($allProducts as $key => $val) {
+                $product = $this->product->where('status', 'active')->find($val['id']);
+                if ($product) {
+                    if ($product->storagesForBuying()->count() >= 1) {
+                        $data['products'][$key] = $val;
+                        $data['products'][$key]['storages'] = $this->product->find($val['id'])->storagesForBuying()->get();
+                    }
+                }
+            }
+            $data['chkproduct'] = count($allProducts);
+            // return $data['chkproduct'];
+            $data['meta'] = [
+                '<meta name="title" content="Results - TronicsPay" />',
+                '<meta name="description" content="TronicsPay.com - Sell your Smartphones for CASH. You\'re guaranteed the highest offers, free shipping, and SAME-DAY payment.  100% satisfaction is guaranteed, or we will return your phone at no cost." />',
+                '<meta property="og:type" content="article" />',
+                '<meta property="og:title" content="Results - TronicsPay" />',
+                '<meta property="og:url" content="' . url('/products/search/') . '" />',
+                '<meta property="og:description" content="TronicsPay.com - Sell your Smartphones for CASH. You\'re guaranteed the highest offers, free shipping, and SAME-DAY payment.  100% satisfaction is guaranteed, or we will return your phone at no cost." />',
+            ];
+            
+            // return "s";
+            
+        
+        try {
+            
+        return view('front.device.checkout-search', $data);
+
+        } catch (\Exception $th) {
+            return print_r($th,true);
+        }
+        // return q;
+    }
+
     public function network(Request $request)
     {
         $brand = $this->brandRepo->findByField('name', $request['brand']);

@@ -7,9 +7,15 @@
         <div class="container">
             <div class="text-center pt-50 hero-top">
                 <h1 class="hero-header my-5">Send In Your Mobile Device &amp; Get Paid.</h1>
-                <div class="search-input my-5">
+                <div class="search-input mt-5 input-group">
                     <input type="text" name="productname" id="search-input" placeholder="Search for your device..." class="form-control" autocomplete="off" />
-                    <div class="search d-none" id="search-result-container">
+                    <div class="input-group-append">
+                        <button class="btn btn-warning" type="button" id="button-addon2" onclick="event.stopPropagation();document.querySelector('#search-result-list').focus();document.querySelector('#search-result-container').classList.remove('d-none');">Search</button>
+                    </div>
+                </div>
+                <div id="s-r-parent" style="position: relative;margin: 0 auto;">
+
+                    <div class="search d-none" id="search-result-container" style="width: 100%;">
                         <div class="lds-ring" id="search-loader">
                             <div></div>
                             <div></div>
@@ -27,7 +33,7 @@
                     </form> --}}
                 </div>
             </div>
-            <div class="row mt-50">
+            <div class="row mt-50 mt-5">
                 @if(isset($rowone))
                 @foreach($rowone as $row)
                 <div class="col-lg-2 col-md-4 col-6 device-link">
