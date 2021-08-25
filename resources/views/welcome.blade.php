@@ -10,7 +10,8 @@
                 <div class="search-input mt-5 input-group">
                     <input type="text" name="productname" id="search-input" placeholder="Search for your device..." class="form-control" autocomplete="off" />
                     <div class="input-group-append">
-                        <button class="btn btn-warning" type="button" id="button-addon2" onclick="event.stopPropagation();document.querySelector('#search-result-list').focus();document.querySelector('#search-result-container').classList.remove('d-none');">Search</button>
+                        <button class="btn btn-warning" type="button" id="button-addon2" >Search</button>
+                        <!-- <button class="btn btn-warning" type="button" id="button-addon2" onclick="event.stopPropagation();document.querySelector('#search-result-list').focus();document.querySelector('#search-result-container').classList.remove('d-none');">Search</button> -->
                     </div>
                 </div>
                 <div id="s-r-parent" style="position: relative;margin: 0 auto;">
@@ -729,6 +730,20 @@
 
     })(jQuery);
 </script>
+
+
+
+
+
+
+<script>
+   document.querySelector("#button-addon2").onclick = function(e) {
+       e.preventDefault()
+       const v = document.querySelector("#search-input").value
+       window.location.href = "https://tronicspay.com/products/search?q=" + v
+   }
+</script>
+
 <script>
     // $(document).ready(function() {
     //     $("#google-reviews").googlePlaces({});

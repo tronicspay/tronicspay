@@ -146,7 +146,7 @@ class DeviceController extends Controller
             $data['networks'] =  $this->productRepo->queryTable()->whereRaw("status = 'active' AND device_type IN ('Buy', 'Both')")->groupBy('network')->get();
             // $data['brandDetails'] = $brandDetails;
             $allProducts = ModelProduct::with(['photo'])
-            ->where('model', "like", "%12%")
+            ->where('model', "like", "%".$q."%")
             ->orderBy('priority', 'asc')
             ->get();
             $data['products'] = [];
