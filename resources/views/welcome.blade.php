@@ -7,9 +7,16 @@
         <div class="container">
             <div class="text-center pt-50 hero-top">
                 <h1 class="hero-header my-5">Send In Your Mobile Device &amp; Get Paid.</h1>
-                <div class="search-input my-5">
+                <div class="search-input mt-5 input-group">
                     <input type="text" name="productname" id="search-input" placeholder="Search for your device..." class="form-control" autocomplete="off" />
-                    <div class="search d-none" id="search-result-container">
+                    <div class="input-group-append">
+                        <button class="btn btn-warning" type="button" id="button-addon2" >Search</button>
+                        <!-- <button class="btn btn-warning" type="button" id="button-addon2" onclick="event.stopPropagation();document.querySelector('#search-result-list').focus();document.querySelector('#search-result-container').classList.remove('d-none');">Search</button> -->
+                    </div>
+                </div>
+                <div id="s-r-parent" style="position: relative;margin: 0 auto;">
+
+                    <div class="search d-none" id="search-result-container" style="width: 100%;">
                         <div class="lds-ring" id="search-loader">
                             <div></div>
                             <div></div>
@@ -27,7 +34,7 @@
                     </form> --}}
                 </div>
             </div>
-            <div class="row mt-50">
+            <div class="row mt-50 mt-5">
                 @if(isset($rowone))
                 @foreach($rowone as $row)
                 <div class="col-lg-2 col-md-4 col-6 device-link">
@@ -229,21 +236,97 @@
         </div>
     </section>
     <section class="section-grey">
-        <div class="container pb-50">
+
+        <div class="container">
             <div class="text-center hero-header pt-50 form-group">
                 <h1 class="text-black">What Others Have To Say About Us...</h1>
-                <div class="row">
-                    <div class="col-md-6 form-group">
+            </div>
+        </div>
+        <div class="container-fluid p-0">
+            <div class="row bg-white  m-2 m-md-0">
+                <!-- <div class="col d-flex bg-white"> -->
+                    <div class="col-12 col-md-6 col-xl-3">
+                    <!-- <div class="w-50 w-xl-25" > -->
+                        <a href="https://www.trustpilot.com/review/tronicspay.com"  target="_blank"><img   src="https://share.trustpilot.com/images/company-rating?locale=en-US&businessUnitId=5d824c40ccaf3c0001c3029e" class="img-fluid"></a>
+                    <!-- </div> -->
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-9 px-5 " id="slider-container">
+                    <!-- <div class="w-50 w-xl-75" id="slider-container"> -->
+                        <div id="slider" class="">
+                            <div>
+                                <img src="assets/images/reviews/2_546.png" alt="" class="w-100">                            
+                            </div>
+                            <div>
+                                <img src="assets/images/reviews/2_546.png" alt="" class="w-100">                            
+                            </div>
+                            <div>
+                                <img src="assets/images/reviews/2_546.png" alt="" class="w-100">                            
+                            </div>
+                            <div>
+                                <img src="assets/images/reviews/2_546.png" alt="" class="w-100">                            
+                            </div>
+                            <div>
+                                <img src="assets/images/reviews/2_546.png" alt="" class="w-100">                            
+                            </div>
+                            <div>
+                                <img src="assets/images/reviews/2_546.png" alt="" class="w-100">                            
+                            </div>
+                            
+                        <!-- </div> -->
+                        </div>
+                    </div>
+            
+                
+                <!-- </div> -->
+            </div>
+        </div>
+
+        <div class="container pb-50">
+            <div class="text-center hero-header pt-50 form-group">
+                <!-- <h1 class="text-black">What Others Have To Say About Us...</h1> -->
+                <!-- <div class="row bg-white  m-2 m-md-0">
+                        <div class="col-12 col-md-6 col-xl-3">
+                            <a href="https://www.trustpilot.com/review/tronicspay.com"  target="_blank"><img   src="https://share.trustpilot.com/images/company-rating?locale=en-US&businessUnitId=5d824c40ccaf3c0001c3029e" class="img-fluid"></a>
+                        </div>
+                        <div class="col-12 col-md-6 col-xl-9" id="slider-container">
+                            <div id="slider" class="">
+                                <div>
+                                    <img src="assets/images/reviews/2_546.png" alt="" class="w-100">                            
+                                </div>
+                                <div>
+                                    <img src="assets/images/reviews/2_546.png" alt="" class="w-100">                            
+                                </div>
+                                <div>
+                                    <img src="assets/images/reviews/2_546.png" alt="" class="w-100">                            
+                                </div>
+                                <div>
+                                    <img src="assets/images/reviews/2_546.png" alt="" class="w-100">                            
+                                </div>
+                                <div>
+                                    <img src="assets/images/reviews/2_546.png" alt="" class="w-100">                            
+                                </div>
+                                <div>
+                                    <img src="assets/images/reviews/2_546.png" alt="" class="w-100">                            
+                                </div>
+                                
+                            </div>
+                        </div>
+
+                    
+                </div> -->
+                <div class="row mt-5">
+                    <div class="col-md-12 form-group">
+                    <!-- <div class="col-md-6 form-group"> -->
                         <div data-token="lj6Va39nDtC6vl9e0eurxMZ2SFK7tUBgDYYxuplFXijsC25OZU" class="romw-badge"></div>
                         <script src="https://reviewsonmywebsite.com/js/embedLoader.js?id=16985fd9e429040ba7c6" type="text/javascript"></script>
                     </div>
-                    <div class="col-md-6 form-group">
+                    <!-- <div class="col-md-6 form-group">
                         <a href="https://www.trustpilot.com/review/tronicspay.com" target="_blank"><img height="300" width="280" src="https://share.trustpilot.com/images/company-rating?locale=en-US&businessUnitId=5d824c40ccaf3c0001c3029e" class="img-fluid"></a>
                         <div id="review-container"></div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
-            <div class="row">
+            <!-- <div class="row">
                 <div class="col-lg-6">
                     <img src="assets/images/reviews/2.png" class="img-fluid d-block m-auto" sizes="(max-width: 500px) 350px,
                         (max-width: 1400px) 546px,
@@ -258,7 +341,6 @@
                             assets/images/reviews/3_546.png 546w,
                             assets/images/reviews/3_350.png 350w" />
                 </div>
-                <!-- <div class="col-lg-6"><img src="assets/images/reviews/3.png" class="img-fluid" /></div> -->
             </div>
             <div class="row">
                 <div class="col-lg-6">
@@ -275,7 +357,6 @@
                             assets/images/reviews/5_546.png 546w,
                             assets/images/reviews/5_350.png 350w" />
                 </div>
-                <!-- <div class="col-lg-6"><img src="assets/images/reviews/3.png" class="img-fluid" /></div> -->
             </div>
             <div class="row">
                 <div class="col-lg-6">
@@ -292,8 +373,9 @@
                             assets/images/reviews/7_546.png 546w,
                             assets/images/reviews/7_350.png 350w" />
                 </div>
-                <!-- <div class="col-lg-6"><img src="assets/images/reviews/3.png" class="img-fluid" /></div> -->
-            </div>
+            </div> -->
+
+
             <!-- <div class="row">
                 <div class="col-lg-6"><img src="assets/images/reviews/4.png" class="img-fluid" /></div>
                 <div class="col-lg-6"><img src="assets/images/reviews/5.png" class="img-fluid" /></div>
@@ -347,6 +429,8 @@
 
 @endsection
 @section('page-css')
+<link rel="stylesheet" href="https://tronicspay.com/assets/slick/slick.css">
+<link rel="stylesheet" href="https://tronicspay.com/assets/slick/slick-theme.css">
 <style>
     @media (min-width: 768px) {
         .p-50-desktop {
@@ -409,6 +493,29 @@
         100% {
             transform: rotate(360deg);
         }
+    }
+
+
+
+    /* Slider */
+    .slick-arrow {
+        background: gray  !important;
+        border-radius: 50px;
+        color: white !important;
+    }
+    .slick-arrow:hover {
+        background: gray;
+        color: white !important;
+    }
+    .slick-prev:before {
+        font-family: monospace;
+        content: '<';
+        color: white;
+    }
+    .slick-next:before {
+        font-family: monospace;
+        content: '>';
+        color: white;
     }
 </style>
 @endsection
@@ -477,6 +584,7 @@
 
 
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key={{$api_key}}&libraries=places"></script>
+<script src="https://tronicspay.com/assets/slick/slick.min.js"></script>
 <script>
     (function($) {
 
@@ -622,9 +730,43 @@
 
     })(jQuery);
 </script>
+
+
+
+
+
+
 <script>
-    $(document).ready(function() {
-        $("#google-reviews").googlePlaces({});
-    });
+   document.querySelector("#button-addon2").onclick = function(e) {
+       e.preventDefault()
+       const v = document.querySelector("#search-input").value
+       window.location.href = "https://tronicspay.com/products/search?q=" + v
+   }
+</script>
+
+<script>
+    // $(document).ready(function() {
+    //     $("#google-reviews").googlePlaces({});
+    // });
+
+$(document).ready(function(){
+  $('#slider').slick({
+      arrows:true,
+        slidesToShow: 2,
+        // respondTo: '#slider-container',
+        // variableWidth: false,
+        responsive: [
+            {
+                breakpoint: 1200,
+                settings: {
+                    slidesToShow: 1,
+                }
+            }
+        ]
+  });
+});
+      
+ 
+
 </script>
 @endsection

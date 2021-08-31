@@ -16,6 +16,7 @@ Route::group(['prefix' => 'products'], function() {
   Route::get('checkout', [App\Http\Controllers\CartController::class, 'checkout']);
   Route::post('checkout', [\App\Http\Controllers\CartController::class, 'storecheckout']);
   Route::resource('cart', App\Http\Controllers\CartController::class);
+  Route::get('search', [App\Http\Controllers\DeviceController::class, 'checkoutsearch']);
 });
 
 Route::get('/products', [App\Http\Controllers\FrontPageController::class, 'products']);

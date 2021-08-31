@@ -1,5 +1,7 @@
 @extends('layouts.customer')
 @section('content')
+
+<div style="display:none">{{$data['product_storage']}}</div>
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
@@ -44,7 +46,9 @@
 
                         <hr>
 
-                        <h4 class="mt-3">Storage Size <small>(Please select one)</small></h4>
+                        <h4 class="mt-3">Storage Size 
+                            <!-- <small>(Please select one)</small> -->
+                    </h4>
                         <div class="table table-responsive">
                             <table>
                                 <tbody>
@@ -91,7 +95,9 @@
 
                         <hr>
 
-                        <h4 class="mt-3">Available Network <small>(Please select one)</small></h4>
+                        <h4 class="mt-3">Available Network 
+                            <!-- <small>(Please select one)</small> -->
+                        </h4>
                         <div class="table table-responsive">
                             <table>
                                 <tbody>
@@ -147,7 +153,9 @@
 
                         <hr>
 
-                        <h4 class="mt-3">Device Condition <small>(Please select one)</small></h4>
+                        <h4 class="mt-3">Device Condition
+                             <!-- <small>(Please select one)</small> -->
+                            </h4>
                         <div class="table table-responsive">
                             <table>
                                 <tbody>
@@ -187,11 +195,13 @@
 
                         <hr>
 
-                        <h4 class="mt-3">Quantity <small>(Please select one)</small></h4>
+                        <h4 class="mt-3">Quantity 
+                            <!-- <small>(Please select one)</small> -->
+                        </h4>
                         <div class="btn-group btn-group-toggle" data-toggle="buttons">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <input type="number" name="quantity" class="form-control" min="1" value="{{ $data['quantity'] }}">
+                                    <input type="number"  disabled name="quantity" class="form-control" min="1" value="{{ $data['quantity'] }}">
                                 </div>
                             </div>
                         </div>
@@ -199,7 +209,7 @@
 
                         <hr>
 
-                        <h4 class="mt-3">Color </h4>
+                        <!-- <h4 class="mt-3">Color </h4>
                         <div class="btn-group btn-group-toggle" data-toggle="buttons">
                             <label class="btn btn-default text-center active">
                                 <input type="radio" name="color_option" id="color_option1" autocomplete="off" checked="">
@@ -207,7 +217,7 @@
                                 <br>
                                 <i class="fas fa-circle fa-2x text-{{ $data['product']['color'] }}"></i>
                             </label>
-                        </div>
+                        </div> -->
 
                         <div class="bg-gray py-2 px-3 mt-4">
                             <h2 class="mb-0">

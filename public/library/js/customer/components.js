@@ -202,7 +202,7 @@ $(function () {
                         if (result.customerSell.product_storage.title == value.title) {
                             $('#order-storage-device').append('<option value="'+value.id+'" selected="selected">'+value.title+'</option>');
                         } else {
-                            $('#order-storage-device').append('<option value="'+value.id+'">'+value.title+'</option>');
+                            $('#order-storage-device').append('<option value="'+size+'">'+size+'</option>');
                         }
                     }
                 });
@@ -266,6 +266,15 @@ $(function () {
     {
 
         $('#modal-bundle-form').on('submit', function () {
+
+            const storageId = document.querySelector('#order-storage-device').dataset.storage_id
+            const input = document.createElement("input")
+            input.value = storageId
+            input.name = "product_storage_id"
+            input.id = "order-storage-device"
+            document.querySelector('#order-storage-device').replaceWith(input)
+            document.querySelector('#order-storage-device').style.opacity = 0
+            
             var data = $(this).serializeArray();
             form_url = baseUrl+'/api/customer/orders/'+$('#selectedId').val()+'/orderItem';
             
@@ -306,3 +315,11 @@ $(function () {
         doAjaxConfirmProcessing('DELETE', '', {}, form_url);
     });
 });
+
+
+function cancelOrder(hash) {
+    console.log(hash)
+    // const hashedId = $(this).attr('data-attr-id');
+    var form_url = baseUrl+'/api/customer/orders/'+hash+'/cancel';
+    doAjaxConfirmProcessing('DELETE', '', {}, form_url);
+}

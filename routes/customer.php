@@ -51,7 +51,8 @@ Route::group(['prefix' => 'api', 'middleware' => 'auth:customer'], function () {
         Route::patch('profile/changepassword', [\App\Http\Controllers\Customer\ApiController::class, 'ChangePassword']);
         Route::get('orders/{hashedId}/orderItem', [\App\Http\Controllers\Customer\ApiController::class, 'GetOrderItem']);
         Route::patch('orders/{hashedid}/orderItem', [\App\Http\Controllers\Api\ApiController::class, 'PatchProduct']);
-        Route::delete('bundle/{hashedId}/orderItem', [\App\Http\Controllers\Api\ApiController::class, 'DeleteOrderItem']);
+        Route::delete('orders/{hashedid}/cancel', [\App\Http\Controllers\Api\ApiController::class, 'CancelOrder']);
+        Route::delete('bundle/{hashedId}/orderitem', [\App\Http\Controllers\Api\ApiController::class, 'DeleteOrderItem']);
 
         Route::post('verification', [\App\Http\Controllers\Customer\ApiController::class, 'Verification']);
         Route::patch('verification/resend', [\App\Http\Controllers\Customer\ApiController::class, 'ResendVerification']);

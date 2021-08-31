@@ -13,24 +13,37 @@
                 </li>
                 <li class="nav-item">
                     <a href="{{ url('customer/my-bundles') }}" class="nav-link {{ (isset($module) && $module == 'mybundles') ? 'active' : '' }}">
-                        <p>My Bundles</p>
+                        <p>My Orders</p>
                     </a>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a href="{{ url('customer/my-devices') }}" class="nav-link {{ (isset($module) && $module == 'mydevices') ? 'active' : '' }}">
                         <p>My Devices</p>
                     </a>
+                </li> -->
+                <li class="nav-item">
+                    <a href="https://support.tronicspay.com" target="_blank" class="nav-link">
+                        <p>FAQ & Support</p>
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/support" target="_blank" class="nav-link {{ (isset($module) && $module == 'mydevices') ? 'active' : '' }}">
-                        <p>Support</p>
+                    <a href="{{ url('customer/profile') }}" class="nav-link {{ (isset($module) && $module == 'profile') ? 'active' : '' }}">
+                        <p>My Profile</p>
                     </a>
+                </li>
+                <li class="nav-item">
+                        <a class="nav-link" href="javascript:void(0)" role="button" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            Logout
+                        </a>
+                        <form id="logout-form" action="{{ route('customer.auth.logout') }}" method="POST" class="d-none">
+                            @csrf
+                        </form>
                 </li>
             </ul>
         </div>
 
         <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
-            <li class="nav-item dropdown">
+            <!-- <li class="nav-item dropdown">
                 <a class="nav-link" data-toggle="dropdown" href="#">
                     <i class="far fa-bell"></i>
                     <span class="badge badge-danger navbar-badge">15</span>
@@ -55,8 +68,8 @@
                     <div class="dropdown-divider"></div>
                     <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
                 </div>
-            </li>
-            <li class="nav-item dropdown show">
+            </li> -->
+            <!-- <li class="nav-item dropdown show">
                 <a id="dropdownSubMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" class="nav-link dropdown-toggle">
                     <i class="fa fa-cogs"></i>
                 </a>
@@ -76,7 +89,7 @@
                         </form>
                     </li>
                 </ul>
-            </li>
+            </li> -->
             <li class="nav-item">
                 <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>

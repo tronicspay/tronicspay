@@ -164,7 +164,7 @@
           var total = parseFloat($('#ship-fee').val()) + parseFloat(response.totalamount).replace(',', '');
         }
         $('#' + id).remove();
-        $('#cart-counter').html('<i class="fas fa-shopping-cart fa-fw"></i> <span>' + response.cartcount + '</span>');
+        $('.cart-counter').html('<i class="fas fa-shopping-cart fa-fw"></i> <span>' + response.cartcount + '</span>');
         $('#cart-total-amount').html('$' + total);
         $('#badge-count').html(response.cartcount);
         if (response.cartcount == 0) {

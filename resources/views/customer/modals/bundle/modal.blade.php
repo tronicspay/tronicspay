@@ -41,7 +41,7 @@
                                     <option value="1">Excellent</option>
                                     <option value="2">Good</option>
                                     <option value="3">Fair</option>
-                                    <option value="4">Poor</option>
+                                    <option value="0">Poor</option>
                                 </select>
                             </div>
                         </div>

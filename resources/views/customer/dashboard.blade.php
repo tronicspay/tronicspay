@@ -3,15 +3,16 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
+            <div class="d-flex flex-wrap justify-content-between mb-2">
                     <h1><i class="nav-icon fas fa-tachometer-alt"></i> Dashboard</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
+                    <a class="btn btn-primary ml-3 float-sm-right" href="/">New Order</a>
+                    <ol class="d-none d-sm-flex breadcrumb float-sm-right mt-1 flex-grow-1 justify-content-end">
                         <li class="breadcrumb-item active"><i class="nav-icon fas fa-tachometer-alt"></i> Dashboard</li>
                     </ol>
-                </div>
+                <!-- <div class="col-sm-6">
+                </div> -->
+                <!-- <div class="col-sm-6">
+                </div> -->
             </div>
         </div>
     </section>
@@ -19,6 +20,7 @@
     <section class="content">
 
         <div class="row">
+            
             <div class="col-md-6">
                 <div class="form-group">
                     <div class="card">
@@ -58,7 +60,7 @@
                 <div class="form-group">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">My Bundles</h3>
+                            <h3 class="card-title">My Orders</h3>
 
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
@@ -127,6 +129,30 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">My Shortcuts</h3>
+
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                                    <i class="fas fa-minus"></i></button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    <ul>
+                                        <li><a href="https://support.tronicspay.com/submit-ticket/2-Orders" target="_blank">Create ticket</a></li>
+                                        <li><a href="{{ url('/library/docs/Shipping-checklist.pdf') }}" target="_blank">Shipping checklist</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
     </section>
 </div>
 @endsection
@@ -164,6 +190,14 @@
         //         { data: 'status', name: 'status', searchable: false, orderable: false, width:'15%' },
         //     ]
         // });
+    });
+</script>
+<script>
+    $('.btn-delete-sell-device').on('click', function () {
+        // TODO
+        // const hashedId = $(this).attr('data-attr-id');
+        // var form_url = baseUrl+'/api/orders/'+hashedId+'/orderitem';
+        // doAjaxConfirmProcessing('DELETE', '', {}, form_url);
     });
 </script>
 @endsection
