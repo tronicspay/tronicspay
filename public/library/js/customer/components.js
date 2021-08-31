@@ -191,26 +191,109 @@ $(function () {
             $('#selectedId').val(hashedid);
             $.ajax({
                 type: "GET",
+                // url: baseUrl+"/admin/orders/"+hashedid+"/orderItem",
                 url: baseUrl+"/api/customer/orders/"+hashedid+"/orderItem",
                 dataType: "json",
                 success: function (result) {
-                    $('select[name="product_id"] option[value="' + result.customerSell.product_id + '"]').attr('selected','selected');
-                    $.each(result.productDetails.storages, function( index, value ) {
-                        if (result.customerSell.product_storage.title == value.title) {
-                            $('#order-storage-device').append('<option value="'+value.id+'" selected="selected">'+value.title+'</option>');
-                        } else {
-                            $('#order-storage-device').append('<option value="'+value.id+'">'+value.title+'</option>');
-                        }
-                    });
+                    // $('select[name="product_id"] option[value="' + result.customerSell.product_id + '"]').attr('selected','selected');
+                    // // $.each(result.productDetails.storages, function( index, value ) {
+                    // //     if (result.customerSell.product_storage.title == value.title) {
+                    // //         $('#order-storage-device').append('<option value="'+value.id+'" selected="selected">'+value.title+'</option>');
+                    // //     } else {
+                    // //         $('#order-storage-device').append('<option value="'+value.id+'">'+value.title+'</option>');
+                    // //     }
+                    // // });
                     
-                    $.each(result.productDetails.networks, function( index, value ) {
-                            $('#order-network-device').append('<option value="'+value.network_id+'">'+value.network.title+'</option>');
-                    });
+                    // // $.each(result.productDetails.networks, function( index, value ) {
+                    // //         $('#order-network-device').append('<option value="'+value.network_id+'">'+value.network.title+'</option>');
+                    // // });
+                    // console.log(result.productDetails.storages)
+                    // $.each(result.productDetails.storages, function( index, value ) {
+                    // if (result.customerSell.product_storage.title == value.title) {
+                    //     $('#order-storage-device').append('<option value="'+value.id+'" selected="selected">'+value.title+'</option>');
+                    // } else {
+                    //     $('#order-storage-device').append('<option value="'+value.id+'">'+value.title+'</option>');
+                    // }
+                    // if (result.customerSell.network_id == value.network_id) {
+                    //     $('#order-network-device').append('<option value="'+value.network_id+'" selected="selected">'+value.network_title+'</option>');
+                    // } else {
+                    //     $('#order-network-device').append('<option value="'+value.network_id+'">'+value.network_title+'</option>');
+                    // }
+                    const storages = result.productDetails.storages
+     
+                    const storagesObj = {}
+                    for (let i = 0; i < storages.length; i++) {
+                        const storage = storages[i];
+                        storagesObj[storage["title"]] = true
+                    }
+
+                    const storagesKeys = Object.keys(storagesObj)
+                    for (let i = 0; i < storagesKeys.length; i++) {
+                        const size = storagesKeys[i];
+                        if (result.customerSell.product_storage.title == size) {
+                            $('#order-storage-device').append('<option value="'+size+'" selected="selected">'+size+'</option>');
+                        } else {
+                            $('#order-storage-device').append('<option value="'+size+'">'+size+'</option>');
+                        }
+                    }
+
+                    for (let i = 0; i < storages.length; i++) {
+                        const storage = storages[i];
+                        if (storage.title === result.customerSell.product_storage.title) {
+                            if (result.customerSell.network_id == storage.network_id) {
+                                $('#order-network-device').append('<option value="'+storage.network_id+'" selected="selected">'+storage.network_title+'</option>');
+                            } else {
+                                $('#order-network-device').append('<option value="'+storage.network_id+'">'+storage.network_title+'</option>');
+                            }
+                        }
+                    }
+
+                    $('select[name="product_id"] option[value="' + result.customerSell.product_id + '"]').attr('selected','selected');
+        
                     $('#order-quantity-device').val(result.customerSell.quantity);
-                    $('#order-type-device').val(result.device_type);
+                    
                     $('#order-type-device option[value="' + result.customerSell.device_type + '"]').attr('selected','selected');
-                
-                }
+                    $('#order-type-device').val(result.customerSell.device_type);
+
+
+                    const size = $('#order-storage-device').val()
+                    const networkId = $('#order-network-device').val()
+                    for (let i = 0; i < storages.length; i++) {
+                        const storage = storages[i];
+                        if (storage["title"] == size && storage["network_id"] == networkId) {
+                            document.querySelector('#order-storage-device').dataset.storage_id = storage.id
+                        }
+                    }
+
+                    $('#order-storage-device').on('change', function() {
+                        $('#order-network-device').html('');
+                        for (let i = 0; i < storages.length; i++) {
+                            const storage = storages[i];
+                            if (storage.title === this.value) {
+                                if (result.customerSell.network_id == storage.network_id) {
+                                    $('#order-network-device').append('<option value="'+storage.network_id+'" selected="selected">'+storage.network_title+'</option>');
+                                } else {
+                                    $('#order-network-device').append('<option value="'+storage.network_id+'">'+storage.network_title+'</option>');
+                                }
+                            }
+                        }
+                        
+                        const size = $('#order-storage-device').val()
+                        const networkId = $('#order-network-device').val()
+                        for (let i = 0; i < storages.length; i++) {
+                            const storage = storages[i];
+                            
+                            console.log(storage["title"], storage["network_id"])
+                            if (storage["title"] == size && storage["network_id"] == networkId) {
+                                document.querySelector('#order-storage-device').dataset.storage_id = storage.id
+                            }
+                        }
+                    })
+                        // $('#order-quantity-device').val(result.customerSell.quantity);
+                        // $('#order-type-device').val(result.device_type);
+                        // $('#order-type-device option[value="' + result.customerSell.device_type + '"]').attr('selected','selected');
+                    
+                    }
             });
             $('#modal-bundle').modal();
         });
@@ -222,6 +305,15 @@ $(function () {
     {
 
         $('#modal-bundle-form').on('submit', function () {
+
+            const storageId = document.querySelector('#order-storage-device').dataset.storage_id
+            const input = document.createElement("input")
+            input.value = storageId
+            input.name = "product_storage_id"
+            input.id = "order-storage-device"
+            document.querySelector('#order-storage-device').replaceWith(input)
+            document.querySelector('#order-storage-device').style.opacity = 0
+            
             var data = $(this).serializeArray();
             form_url = baseUrl+'/api/customer/orders/'+$('#selectedId').val()+'/orderItem';
             
@@ -262,3 +354,11 @@ $(function () {
         doAjaxConfirmProcessing('DELETE', '', {}, form_url);
     });
 });
+
+
+function cancelOrder(hash) {
+    console.log(hash)
+    // const hashedId = $(this).attr('data-attr-id');
+    var form_url = baseUrl+'/api/customer/orders/'+hash+'/cancel';
+    doAjaxConfirmProcessing('DELETE', '', {}, form_url);
+}

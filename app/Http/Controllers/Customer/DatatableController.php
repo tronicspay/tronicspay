@@ -108,8 +108,8 @@ class DatatableController extends Controller
                 $html_out .= '<div class="dropdown">';
                 $html_out .= '<button class="btn btn-primary dropdown-toggle btn-xs" type="button" id="action-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>';
                 $html_out .= '<div class="dropdown-menu dropdown-menu-right" aria-labelledby="action-btn">';
-                $html_out .= '<a class="dropdown-item font14px" href="' . url('customer/my-devices/' . $order_items['hashedid']) . '"><i class="fa fa-pencil-alt fa-fw"></i> Edit</a>';
-                $html_out .= '<a class="dropdown-item font14px" href="javascript:void(0)" onclick="deleteStatus(\'' . $order_items['hashedid'] . '\')"><i class="fa fa-trash-alt fa-fw"></i> Delete</a>';
+                $html_out .= '<a class="dropdown-item font14px" href="' . url('customer/my-devices/' . $order_items['hashedid']) . '"><i class="fa fa-pencil-alt fa-fw"></i> Review Device Details</a>';
+                // $html_out .= '<a class="dropdown-item font14px" href="javascript:void(0)" onclick="cancelOrder(\'' . $order_items['hashedid'] . '\')"><i class="fa fa-trash-alt fa-fw"></i> Cancel</a>';
                 $html_out .= '</div>';
                 $html_out .= '</div>';
                 return $html_out;
@@ -238,7 +238,7 @@ class DatatableController extends Controller
                     $html_out .= '<a class="dropdown-item font14px" href="' . $orders['shipping_tracker'] . '" target="_blank"><i class="nav-icon fas fa-file-alt fa-fw"></i> Track Order</a>';
                 }
                 $html_out .= '<a class="dropdown-item font14px" href="' . url('customer/my-bundles/' . $orders['hashedid']) . '"><i class="fa fa-pencil-alt fa-fw"></i> Edit</a>';
-                $html_out .= '<a class="dropdown-item font14px" href="javascript:void(0)" onclick="deleteStatus(\'' . $orders['hashedid'] . '\')"><i class="fa fa-trash-alt fa-fw"></i> Delete</a>';
+                $html_out .= '<a class="dropdown-item font14px" href="javascript:void(0)" onclick="cancelOrder(\'' . $orders['hashedid'] . '\')"><i class="fa fa-trash-alt fa-fw"></i> Cancel</a>';
                 $html_out .= '</div>';
                 $html_out .= '</div>';
                 return $html_out;

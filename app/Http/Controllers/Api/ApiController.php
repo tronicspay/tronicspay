@@ -224,6 +224,28 @@ class ApiController extends Controller
         }
         return response()->json($response);
     }
+    public function CancelOrder($hashedId)
+    {
+
+
+        $id = app('App\Http\Controllers\GlobalFunctionController')->decodeHashid($hashedId);
+
+        $status = SettingsStatus::with('sms_template')->find('2');
+
+        if ($status->sms_template()->exists() && $status->sms_template->status == 'Active') {
+            $this->doSmsSending($status->sms_template, $id);
+        }
+
+        $makeRequest = ['status_id' => '2'];
+
+        $this->orderRepo->update($makeRequest, $id);
+
+        $response['status'] = 200;
+        $response['message'] = "Order has been successfully canceled";
+
+        return response()->json($response);
+        
+    }
 
     public function GetStatusDetails($hashedId)
     {
@@ -263,14 +285,6 @@ class ApiController extends Controller
     public function UpdateOrderStatus($hashedId, Request $request)
     {
         $id = app('App\Http\Controllers\GlobalFunctionController')->decodeHashid($hashedId);
-
-        //$status_package_delivered = $this->statusRepo->rawByField("name = ?", ['Package delivered']);
-
-        // if ($request['sms_template_id']) {
-        //     $sms_template = $this->smsTemplateRepo->find($id);
-        //     if ($sms_template && $sms_template->status == 'Active') {
-        //     }
-        // }
 
         $status = SettingsStatus::with('sms_template')->find($request['status_id']);
 
@@ -804,6 +818,31 @@ class ApiController extends Controller
             $data['payment_image'] = '<img src="' . url('/assets/images/payments/4.png') . '" alt="Cash App">';
         }
         return response()->json($data);
+    }
+
+    
+    public function GetOrderItem($hashedId)
+    {
+        $id = app('App\Http\Controllers\GlobalFunctionController')->decodeHashid($hashedId);
+        $data['customerSell'] = $this->orderItemRepo->rawByWithField(['product_storage'], 'id = ?', [$id]);
+        $data['productDetails'] = $this->productRepo->rawByWithField(['networks.network'], 'id = ?', [$data['customerSell']['product_id']]);
+        $data['productDetails']['storages'] = $data['productDetails']->storagesForBuying()->get();
+        // $networks = $data['productDetails']['networks']; 
+        $curr_network_id = $data['customerSell']['network_id'];
+        $prod_storages = $data['productDetails']['storages'];
+        $all_networks = $this->networkRepo->all(null, null, ['id', 'title']);
+        
+        foreach ($prod_storages as $k => $storage) {
+            foreach ($all_networks as $network) {
+                
+                if ($network['id'] === $storage['network_id']) {
+                    $data['productDetails']['storages'][$k]['network_title'] = $network['title'];
+                }
+            }
+        }
+
+        $config = $this->configRepo->find(1);
+        return $data;
     }
 
     public function OrderPaymentSuccess($hashedId)
