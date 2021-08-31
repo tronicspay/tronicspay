@@ -181,7 +181,8 @@ $(function () {
 
 
 
-    
+    var selectedDevice = "";
+
     if($(".btn-edit-sell-mydevice").length)
     {
         $('.btn-edit-sell-mydevice').on('click', function () {
@@ -189,34 +190,77 @@ $(function () {
             $('#order-storage-device, #order-network-device').html('');
             var hashedid = $(this).attr('data-attr-id');
             $('#selectedId').val(hashedid);
-            $.ajax({
-                type: "GET",
-                url: baseUrl+"/api/customer/orders/"+hashedid+"/orderItem",
-                dataType: "json",
-                success: function (result) {
-                    $('select[name="product_id"] option[value="' + result.customerSell.product_id + '"]').attr('selected','selected');
-                    $.each(result.productDetails.storages, function( index, value ) {
+        $.ajax({
+            type: "GET",
+            url: baseUrl+"/api/customer/orders/"+hashedid+"/orderItem",
+            dataType: "json",
+            success: function (result) {
+                selectedDevice = result.productDetails;
+                $('select[name="product_id"] option[value="' + result.customerSell.product_id + '"]').attr('selected','selected');
+                $.each(result.productDetails.storages, function( index, value ) {
+                    if (result.customerSell.network_id == value.network_id) {
                         if (result.customerSell.product_storage.title == value.title) {
                             $('#order-storage-device').append('<option value="'+value.id+'" selected="selected">'+value.title+'</option>');
                         } else {
                             $('#order-storage-device').append('<option value="'+value.id+'">'+value.title+'</option>');
                         }
-                    });
-                    
-                    $.each(result.productDetails.networks, function( index, value ) {
-                            $('#order-network-device').append('<option value="'+value.network_id+'">'+value.network.title+'</option>');
-                    });
-                    $('#order-quantity-device').val(result.customerSell.quantity);
-                    $('#order-type-device').val(result.device_type);
-                    $('#order-type-device option[value="' + result.customerSell.device_type + '"]').attr('selected','selected');
-                
-                }
-            });
+                    }
+                });
+                $.each(result.productDetails.networks, function( index, value) {
+                    if (result.customerSell.network_id == value.network_id) {
+                        $('#order-network-device').append('<option value="'+value.network_id+'" selected="selected">'+value.network.title+'</option>');
+                    } else {
+                        $('#order-network-device').append('<option value="'+value.network_id+'">'+value.network.title+'</option>');
+                    }
+                });
+                $('#order-quantity-device').val(result.customerSell.quantity);
+                $('#order-type-device').val(result.customerSell.device_type);
+                $('#order-type-device option[value="' + result.customerSell.device_type + '"]').attr('selected','selected');
+               
+            }
+        });
             $('#modal-bundle').modal();
         });
     }
 
-    
+    $('#order-product-device').on('change', function () {
+        var id = $(this).val();
+        var selectedNetwork = $('#order-network-device :selected').text();
+
+        $.ajax({
+            type: "GET",
+            url: baseUrl+"/api/products/"+id,
+            dataType: "json",
+            success: function (response) {
+                selectedDevice = response;
+                $('#order-network-device').html('');
+                $.each(response.networks, function( index, value ) {
+                    if (selectedNetwork == value.network.title) {
+                        $('#order-network-device').append('<option value="'+value.network_id+'" selected="selected">'+value.network.title+'</option>');
+                    } else {
+                        $('#order-network-device').append('<option value="'+value.network_id+'">'+value.network.title+'</option>');
+                    }
+                });
+                $('#order-network-device').trigger('change');
+            }
+        });
+    });
+
+    $('#order-network-device').on('change', function () {
+        var id = $(this).val();
+        var selectedStorage = $('#order-storage-device :selected').text();
+
+        $('#order-storage-device').html('');
+        $.each(selectedDevice.storages, function( index, value ) {
+            if (id == value.network_id) {
+                if (selectedStorage == value.title) {
+                    $('#order-storage-device').append('<option value="'+value.id+'" selected="selected">'+value.title+'</option>');
+                } else {
+                    $('#order-storage-device').append('<option value="'+value.id+'">'+value.title+'</option>');
+                }
+            }
+        });
+    });
     
     if($("#modal-bundle-form").length)
     {
