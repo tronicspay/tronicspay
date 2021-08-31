@@ -202,7 +202,7 @@ $(function () {
                         if (result.customerSell.product_storage.title == value.title) {
                             $('#order-storage-device').append('<option value="'+value.id+'" selected="selected">'+value.title+'</option>');
                         } else {
-                            $('#order-storage-device').append('<option value="'+size+'">'+size+'</option>');
+                            $('#order-storage-device').append('<option value="'+value.id+'">'+value.title+'</option>');
                         }
                     }
                 });
