@@ -400,7 +400,7 @@
                                                                             <label class="label label-warning">Fair</label>
                                                                             @elseif ($value['device_type'] == 'poor_offer')
                                                                             <label class="label label-danger">Broken</label>
-																		    @else
+                                                                            @else
                                                                             <label class="label label-danger">Unknown</label>
                                                                             @endif
                                                                         </td>
