@@ -928,6 +928,7 @@ class DeviceController extends Controller
                 $max_height = 0;
                 $max_length = 0;
                 $total_weight = 0;
+                $total_value = 0;
                 foreach ($request['cart'] as $key => $value) {
                     $brand = $this->brandRepo->findByField('name', $value['brand']);
                     $product = $this->productRepo->rawByField("brand_id = ? and model = ?", [$brand->id, $value['model']]);
@@ -1015,6 +1016,8 @@ class DeviceController extends Controller
                     ];
 
                     $this->orderItemRepo->create($makeRequest);
+
+                    $total_value += ( $productStorage[$value['device_type']] * $value['quantity'] );
                 }
             }
             $email = $request['email'];
@@ -1095,7 +1098,7 @@ class DeviceController extends Controller
                                     </div>
                                     </div>
                                 </div>
-                                <iframe src="https://scdcb.com/p.ashx?a=42&e=83&t=21472&p=490.00" height="1" width="1" frameborder="0"></iframe>
+                                <iframe src="https://scdcb.com/p.ashx?a=42&e=83&t=' . $order->order_no . '&p=' . $total_value . '" height="1" width="1" frameborder="0"></iframe>
                             </div>';
 
             $response['message'] = $htmlResult;
