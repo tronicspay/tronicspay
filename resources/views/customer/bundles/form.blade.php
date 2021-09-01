@@ -95,7 +95,7 @@ $overallSubTotal = 0;
                                     <td align="center">{{ $value['network']['title'] }}</td>
                                     <td align="right">
                                         <?php
-                                        $subTotal = $value['quantity'] * $value['amount'];
+                                        $subTotal = $value['amount'];
                                         $overallSubTotal = $overallSubTotal + $subTotal;
                                         echo '$' . number_format($subTotal, 2, '.', ',');
                                         ?>
