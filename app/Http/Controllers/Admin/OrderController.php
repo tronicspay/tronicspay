@@ -425,7 +425,12 @@ class OrderController extends Controller
     {
         $id = app('App\Http\Controllers\GlobalFunctionController')->decodeHashid($hashedId);
         $data['customerSell'] = $this->orderItemRepo->rawByWithField(['product_storage'], 'id = ?', [$id]);
-        $data['productDetails'] = $this->productRepo->rawByWithField(['networks.network'], 'id = ?', [$data['customerSell']['product_id']]);
+        $data['productDetails'] = $this->productRepo->rawByWithField(['storages.network'], 'id = ?', [$data['customerSell']['product_id']]);
+
+        foreach ($data['productDetails']['storages'] as $storage) {
+            $data['networks'][$storage->network->id] = $storage->network->title;
+        }
+
         $data['productDetails']['storages'] = $data['productDetails']->storagesForBuying()->get();
         // $networks = $data['productDetails']['networks'];
         $curr_network_id = $data['customerSell']['network_id'];

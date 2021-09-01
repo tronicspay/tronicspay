@@ -41,11 +41,12 @@ $(function () {
                         }
                     }
                 });
-                $.each(result.productDetails.networks, function( index, value) {
-                    if (result.customerSell.network_id == value.network_id) {
-                        $('#order-network-device').append('<option value="'+value.network_id+'" selected="selected">'+value.network.title+'</option>');
+                
+                $.each(result.networks, function(id, value) {
+                    if (result.customerSell.network_id == id) {
+                        $('#order-network-device').append('<option value="'+id+'" selected="selected">'+value+'</option>');
                     } else {
-                        $('#order-network-device').append('<option value="'+value.network_id+'">'+value.network.title+'</option>');
+                        $('#order-network-device').append('<option value="'+id+'">'+value+'</option>');
                     }
                 });
                 $('#order-quantity-device').val(result.customerSell.quantity);
@@ -97,15 +98,6 @@ $(function () {
     });
 
     $('#modal-order-form').on('submit', function () {
-        const storageId = document.querySelector('#order-storage-device').dataset.storage_id
-        const input = document.createElement("input")
-        input.value = storageId
-        input.name = "product_storage_id"
-        input.id = "order-storage-device"
-        document.querySelector('#order-storage-device').replaceWith(input)
-        document.querySelector('#order-storage-device').style.opacity = 0
-        
-
         var data = $(this).serializeArray();
         form_url = baseUrl+'/api/products/'+$('#selectedId').val();
         if ($('#order-product-device').val() == 0) 
