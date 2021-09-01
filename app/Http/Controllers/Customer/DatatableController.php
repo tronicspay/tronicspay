@@ -238,7 +238,7 @@ class DatatableController extends Controller
                     $html_out .= '<a class="dropdown-item font14px" href="' . $orders['shipping_tracker'] . '" target="_blank"><i class="nav-icon fas fa-file-alt fa-fw"></i> Track Order</a>';
                 }
                 $html_out .= '<a class="dropdown-item font14px" href="' . url('customer/my-bundles/' . $orders['hashedid']) . '"><i class="fa fa-pencil-alt fa-fw"></i> Edit</a>';
-                $html_out .= '<a class="dropdown-item font14px" href="javascript:void(0)" onclick="cancelOrder(\'' . $orders['hashedid'] . '\')"><i class="fa fa-trash-alt fa-fw"></i> Cancel</a>';
+                $html_out .= '<a class="dropdown-item font14px" href="javascript:void(0)" onclick="cancelOrder(\'' . $orders['hashedid'] . '\')"><i class="fa fa-trash-alt fa-fw"></i> Cancel Order</a>';
                 $html_out .= '</div>';
                 $html_out .= '</div>';
                 return $html_out;

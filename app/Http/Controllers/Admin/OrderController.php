@@ -327,8 +327,10 @@ class OrderController extends Controller
                 $generateHtml .= '<label class="label label-info">Good</label>';
             } else if ($value['device_type'] == 3) {
                 $generateHtml .= '<label class="label label-warning">Fair</label>';
-            } else {
+            } else if ($value['device_type'] == 0) {
                 $generateHtml .= '<label class="label label-danger">Poor</label>';
+            } else {
+                $generateHtml .= '<label class="label label-danger">Unknown</label>';
             }
             $generateHtml .= '</td>
                                                     <td align="center">' . $value['network']['title'] . '</td>
