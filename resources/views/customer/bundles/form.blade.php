@@ -86,8 +86,10 @@ $overallSubTotal = 0;
                                         <label class="label label-info">Good</label>
                                         @elseif($value['device_type'] == 3)
                                         <label class="label label-warning">Fair</label>
+                                        @elseif($value['device_type'] == 0)
+                                        <label class="label label-danger">Broken</label>
                                         @else
-                                        <label class="label label-danger">Poor</label>
+                                        <label class="label label-danger">Unknown</label>
                                         @endif
                                     </td>
                                     <td align="center">{{ $value['network']['title'] }}</td>
