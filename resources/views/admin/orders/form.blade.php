@@ -83,16 +83,17 @@ $overallSubTotal = 0;
                                     <td>{{ $value['product']['brand']['name'] }} {{ $value['product']['model'] }}</td>
                                     <td align="center">{{ $value['product_storage']['title'] }}</td>
                                     <td align="center">{{ $value['quantity'] }}</td>
-                                    <td align="center">@if($value['device_type'] == 'excellent_offer')
+                                    <td align="center">
+                                        @if($value['device_type'] == 'excellent_offer')
                                         <label class="label label-success">Excellent</label>
                                         @elseif($value['device_type'] == 'good_offer')
                                         <label class="label label-info">Good</label>
                                         @elseif($value['device_type'] == 'fair_offer')
                                         <label class="label label-warning">Fair</label>
                                         @elseif($value['device_type'] == 'poor_offer')
-					<label class="label label-danger">Broken</label>
-					@else
-					<label class="label label-danger">Unknown</label>
+                                        <label class="label label-danger">Broken</label>
+                                        @else
+                                        <label class="label label-danger">Unknown</label>
                                         @endif
                                     </td>
                                     <td align="center">{{ $value['network']['title'] }}</td>
