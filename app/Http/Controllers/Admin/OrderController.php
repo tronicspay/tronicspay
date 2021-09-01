@@ -321,17 +321,17 @@ class OrderController extends Controller
                                                     <td align="center">' . $value['product_storage']['title'] . '</td>
                                                     <td align="center">' . $value['quantity'] . '</td>
                                                     <td align="center">';
-            if ($value['device_type'] == 'excellent_offer') {
+            if ($value['device_type'] == 1) {
                 $generateHtml .= '<label class="label label-success">Excellent</label>';
-            } else if ($value['device_type'] == 'good_offer') {
+            } else if ($value['device_type'] == 2) {
                 $generateHtml .= '<label class="label label-info">Good</label>';
-            } else if ($value['device_type'] == 'fair_offer') {
+            } else if ($value['device_type'] == 3) {
                 $generateHtml .= '<label class="label label-warning">Fair</label>';
-            } else if ($value['device_type'] == 'poor_offer') {
-                $generateHtml .= '<label class="label label-danger">Broken</label>';
+            } else if ($value['device_type'] == 0) {
+                $generateHtml .= '<label class="label label-danger">Poor</label>';
             } else {
                 $generateHtml .= '<label class="label label-danger">Unknown</label>';
-            }            
+            }
             $generateHtml .= '</td>
                                                     <td align="center">' . $value['network']['title'] . '</td>
                                                     <td align="right">$' . number_format($subTotal, 2, '.', ',') . '</td>

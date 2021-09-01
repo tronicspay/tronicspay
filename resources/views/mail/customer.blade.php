@@ -392,14 +392,14 @@
                                                                         <td align="center">{{ $value['product_storage']['title'] }}</td>
                                                                         <td align="center">{{ $value['quantity'] }}</td>
                                                                         <td align="center">
-                                                                            @if ($value['device_type'] == 'excellent_offer')
+                                                                            @if ($value['device_type'] == 1)
                                                                             <label class="label label-success">Excellent</label>
-                                                                            @elseif ($value['device_type'] == 'good_offer')
+                                                                            @elseif ($value['device_type'] == 2)
                                                                             <label class="label label-info">Good</label>
-                                                                            @elseif ($value['device_type'] == 'fair_offer')
+                                                                            @elseif ($value['device_type'] == 3)
                                                                             <label class="label label-warning">Fair</label>
-                                                                            @elseif ($value['device_type'] == 'poor_offer')
-                                                                            <label class="label label-danger">Broken</label>
+                                                                            @elseif ($value['device_type'] == 0)
+                                                                            <label class="label label-danger">Poor</label>
                                                                             @else
                                                                             <label class="label label-danger">Unknown</label>
                                                                             @endif
