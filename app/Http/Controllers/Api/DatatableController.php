@@ -309,7 +309,7 @@ class DatatableController extends Controller
 
     public function GetProduct()
     {
-        $products = $this->productRepo->rawWith(['brand', 'photo', 'networks.network', 'storages'], "status = ?", ['Active']);
+        $products = $this->productRepo->rawWith(['brand', 'photo', 'storages.network'], "status = ?", ['Active']);
         $products;
         return Datatables::of($products)
             ->editColumn('photo', function ($products) {
@@ -356,11 +356,15 @@ class DatatableController extends Controller
                 if ($products->device_type == 'Buy' || $products->device_type == 'Both') {
                     $storages = '';
                     $networks = '';
+                    $product_networks = [];
                     if ($products->storages != null) {
-                        foreach ($products->storages as $pnKey => $pnVal) {
-                            $networks .= $pnVal['network']['title'] . ', ';
+                        foreach ($products->storages as $storage) {
+                            if($storage->network != null) {
+                                $product_networks[$storage->network->id] = $storage->network->title;
+                            }
                         }
-                        $networks = substr($networks, 0, -2);
+                        asort($product_networks);
+                        $networks = implode(", ", $product_networks);
                     }
                     $html .= '<small><b>Carrier:</b> ' . $networks . '</small>';
                 }
