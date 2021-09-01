@@ -1002,6 +1002,24 @@ class DeviceController extends Controller
 
                     $productStorage = $this->productStorageRepo->rawByField("product_id = ? and title = ?", [$product->id, $value['storage']]);
 
+                    switch ($value['device_type']) {
+                        case 'excellent_offer':
+                            $device_type = 1;
+                            break;
+                        case 'good_offer':
+                            $device_type = 2;
+                            break;
+                        case 'fair_offer':
+                            $device_type = 3;
+                            break;
+                        case 'poor_offer':
+                            $device_type = 0;
+                            break;
+                                
+                        default:
+                            $device_type = 0;
+                            break;
+                    }
 
                     $makeRequest = [
                         'customer_id' => isset($chkcustomer->id) ? $chkcustomer->id : $customer->id,
@@ -1012,7 +1030,7 @@ class DeviceController extends Controller
                         // 'amount' => $value['amount'],
                         'amount' => $productStorage[$value['device_type']],
                         'quantity' => $value['quantity'],
-                        'device_type' => $value['device_type']
+                        'device_type' => $device_type
                     ];
 
                     $this->orderItemRepo->create($makeRequest);

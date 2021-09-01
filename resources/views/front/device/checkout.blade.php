@@ -66,7 +66,7 @@
                                                         <input type="radio" class="radio-device" name="device_type" value="3" autocomplete="off"> Fair
                                                     </label>
                                                     <label class="btn btn-outline-warning radio-btn">
-                                                        <input type="radio" class="radio-device" name="device_type" value="4" autocomplete="off"> Broken
+                                                        <input type="radio" class="radio-device" name="device_type" value="0" autocomplete="off"> Broken
                                                     </label>
                                                 </div>
                                             </div>
