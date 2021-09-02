@@ -844,20 +844,20 @@ class DeviceController extends Controller
                     if ($dimensions[0] > $max_height) {
                         $max_height = $dimensions[0];
                     }
-                    if ($$dimensions[1] > $max_width) {
+                    if ($dimensions[1] > $max_width) {
                         $max_width = $dimensions[1];
                     }
                     $max_length = $max_length + $dimensions[2];
-
                     $total_weight = $total_weight + $product->weight * $value['quantity'];
                     $total_products = $total_products + $value['quantity'];
+					if ($total_weight == 0) { 
+						$total_weight = 10;
+					}
                 }
-
-
                 $parcel_height = $max_height + 1;
                 $parcel_width = $max_width + 1;
                 $parcel_length = $max_length + 1;
-                $total_weight = $total_weight + 4;
+                $total_weight = ceil($total_weight);
             }
 
 
