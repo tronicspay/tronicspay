@@ -389,21 +389,7 @@
     <section class="section-grey">
         <div class="container pb-50">
             <div class="row">
-                <div class="col-lg-5" style="background-color: rgb(255, 255, 255);">
-                    <div class="p-50-desktop">
-                        <img src="assets/images/reviews/8.png" class="img-fluid  d-block m-auto" sizes="(max-width: 500px) 351px,
-                                426px" srcset="assets/images/reviews/8_351.png 351w, assets/images/reviews/8_426.png 426w" />
-                        <img src="assets/images/reviews/9.png" class="img-fluid  d-block m-auto" sizes="(min-width: 1400px) 426px, (max-width: 501px) 351px" srcset="assets/images/reviews/9_426.png 426w, assets/images/reviews/9_351.png 351w" />
-                        <img src="assets/images/reviews/10.png" class="img-fluid  d-block m-auto" sizes="(min-width: 1400px) 426px, (max-width: 501px) 351px" srcset="assets/images/reviews/10_426.png 426w, assets/images/reviews/10_351.png 351w" />
-                        <img src="assets/images/reviews/11.png" class="img-fluid  d-block m-auto" sizes="(min-width: 1400px) 426px, (max-width: 501px) 351px" srcset="assets/images/reviews/11_426.png 426w, assets/images/reviews/11_351.png 351w" />
-
-                        <!--                         
-                        <img src="assets/images/reviews/9.png" class="img-fluid" />
-                        <img src="assets/images/reviews/10.png" class="img-fluid" />
-                        <img src="assets/images/reviews/11.png" class="img-fluid" /> -->
-                    </div>
-                </div>
-                <div class="col-lg-7" style="background-color: rgb(238, 238, 233);">
+                <div class="col-lg-7" style="background-color: rgb(238, 238, 233); margin-left: auto; margin-right: auto;">
                     <div class="text-center contact-us">
                         <i class="far fa-fw fa-envelope"></i>
                         <h4 class="contact-head">Contact Us</h4>
