@@ -5,7 +5,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h2><i class="nav-icon fas fa-shopping-basket"></i> My Bundles</h2>
+                        <h2><i class="nav-icon fas fa-shopping-basket"></i> My Offers</h2>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
