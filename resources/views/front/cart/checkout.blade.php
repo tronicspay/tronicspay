@@ -190,7 +190,7 @@
 
                                     <div class="row box-gray pt10">
                                         <div class="col-md-5">
-                                            <b>Subtotal</b>
+                                            <b>Cash Offer</b>
                                         </div>
                                         <div class="col-md-7">
                                             <div class="form-group mb10 cart-subtotal"></div>

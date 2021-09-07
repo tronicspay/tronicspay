@@ -136,7 +136,7 @@ class DeviceController extends Controller
 
     public function checkoutsearch(Request $request)
     {
-            
+
             $q = $request->query('q');
             $data['isValidAuthentication'] = (Auth::guard('customer')->check() != null) ? true : false;
             $data['brand'] = "";
@@ -151,7 +151,7 @@ class DeviceController extends Controller
             ->get();
             $data['products'] = [];
 
- 
+
             foreach ($allProducts as $key => $val) {
                 $product = $this->product->where('status', 'active')->find($val['id']);
                 if ($product) {
@@ -171,12 +171,12 @@ class DeviceController extends Controller
                 '<meta property="og:url" content="' . url('/products/search/') . '" />',
                 '<meta property="og:description" content="TronicsPay.com - Sell your Smartphones for CASH. You\'re guaranteed the highest offers, free shipping, and SAME-DAY payment.  100% satisfaction is guaranteed, or we will return your phone at no cost." />',
             ];
-            
+
             // return "s";
-            
-        
+
+
         try {
-            
+
         return view('front.device.checkout-search', $data);
 
         } catch (\Exception $th) {
@@ -336,7 +336,7 @@ class DeviceController extends Controller
             // }
             // die();
             // dd($data['specs']);
-            // foreach ($data['productStorage'] as $psKey => $psVal) 
+            // foreach ($data['productStorage'] as $psKey => $psVal)
             // {
             //     $active = ($psKey == 0) ? ' active' : '';
             //     $checked = ($psKey == 0) ? ' checked' : '';
@@ -512,7 +512,7 @@ class DeviceController extends Controller
         // $data['brandDetails'] = $brandDetails;
         // $allProducts = $this->productRepo->rawByWithFieldAll(['photo'], "brand_id = ?", [$brandDetails->id], 'model');
         // $data['products'] = [];
-        // foreach ($allProducts as $key => $val) 
+        // foreach ($allProducts as $key => $val)
         // {
         //     if ($this->product->find($val['id'])->storagesForBuying()->count() >= 1) {
         //         $data['products'][$key] = $val;
@@ -1015,7 +1015,7 @@ class DeviceController extends Controller
                         case 'poor_offer':
                             $device_type = 0;
                             break;
-                                
+
                         default:
                             $device_type = 0;
                             break;
@@ -1079,7 +1079,7 @@ class DeviceController extends Controller
                 // $content = view('mail.customerAddBundle', $data)->render();
 
                 // $response['status'] = 301;
-                // $response['message'] = 'Cart has been added to your bundles';
+                // $response['message'] = 'Cart has been added to your offers';
                 // $response['redirectTo'] = 'customer/my-bundles';
 
                 $credentials_HTML = "<p><a href='../customer/auth/login'>Login here</a></p>";
@@ -1092,7 +1092,7 @@ class DeviceController extends Controller
                 $credentials_HTML = "<p><a href='../customer/auth/login'>Login</a> with Username: " . $data['email'] . ", password: " . $data['password'] . "</p>";
             }
             $response['status'] = 200;
-            //  
+            //
             $shipping_label_url = url('order/' . $order["hashedId"] . '/shippinglabel');
             $htmlResult = '<div class="container">
                                 <div class="row">
@@ -1112,7 +1112,7 @@ class DeviceController extends Controller
                                         </p>
                                         <p>
                                         Print <a href="' . $shipping_label_url . '" target="_blank">your shipping label</a>
-                                        </p>' . $credentials_HTML . ' 
+                                        </p>' . $credentials_HTML . '
                                     </div>
                                     </div>
                                 </div>
@@ -1270,9 +1270,9 @@ class DeviceController extends Controller
 
     /**
      * Search api for products
-     * 
+     *
      * @param Illuminate\Http\Request
-     * 
+     *
      * @return response
      */
     public function search(Request $request)

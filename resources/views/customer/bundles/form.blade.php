@@ -68,7 +68,7 @@ $overallSubTotal = 0;
                                     <th width="12%">
                                         <center>Carrier</center>
                                     </th>
-                                    <th width="12%" style="text-align: right;">Subtotal</th>
+                                    <th width="12%" style="text-align: right;">Cash Offer</th>
                                     <th width="12%"></th>
                                 </tr>
                             </thead>
@@ -175,21 +175,16 @@ $overallSubTotal = 0;
                             <table class="table">
                                 <tbody>
                                     <tr>
-                                        <th style="width:50%">Subtotal:</th>
+                                        <th style="width:50%">Cash Offer:</th>
                                         <td>${{ number_format($overallSubTotal, 2, '.', ',') }}</td>
                                     </tr>
                                     <tr>
                                         <th>Shipping:</th>
-                                        <td>${{ number_format($shippingFee, 2, '.', ',') }}</td>
+                                        <td>FREE</td>
                                     </tr>
                                     <tr>
                                         <th>Total:</th>
-                                        <td>
-                                            <?php
-                                            $total = $overallSubTotal + $shippingFee;
-                                            echo '$' . number_format($overallSubTotal + $shippingFee, 2, '.', ',');
-                                            ?>
-                                        </td>
+                                        <td>${{ number_format($overallSubTotal, 2, '.', ',') }}</td>
                                     </tr>
                                 </tbody>
                             </table>

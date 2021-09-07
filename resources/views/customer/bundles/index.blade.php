@@ -10,7 +10,7 @@
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="{{ url('customer/dashboard') }}" class="fontGray1"><i class="nav-icon fas fa-tachometer-alt"></i> Dashboard</a></li>
-                        <li class="breadcrumb-item"><i class="nav-icon fas fa-shopping-basket"></i> My Bundles</li>
+                        <li class="breadcrumb-item"><i class="nav-icon fas fa-shopping-basket"></i> My Offers</li>
                         <li class="breadcrumb-item active">List</li>
                     </ol>
                 </div>

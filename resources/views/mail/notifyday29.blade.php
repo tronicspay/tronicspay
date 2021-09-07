@@ -187,7 +187,7 @@
                                                 <th width="14%">
                                                     <center>Carrier</center>
                                                 </th>
-                                                <th width="14%" style="text-align: right;">Subtotal</th>
+                                                <th width="14%" style="text-align: right;">Cash Offer</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -255,11 +255,11 @@
                                                         </tr>
                                                         <tr>
                                                             <th>Shipping:</th>
-                                                            <td>${{ number_format($shippingFee, 2, '.', ',') }}</td>
+                                                            <td>FREE</td>
                                                         </tr>
                                                         <tr>
                                                             <th>Total:</th>
-                                                            <td>${{ number_format($overallSubTotal + $shippingFee, 2, '.', ',') }}</td>
+                                                            <td>${{ number_format($overallSubTotal, 2, '.', ',') }}</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>

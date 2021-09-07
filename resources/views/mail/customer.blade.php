@@ -376,7 +376,7 @@
                                                                         <th width="14%">
                                                                             <center>Carrier</center>
                                                                         </th>
-                                                                        <th width="14%" style="text-align: right;">Subtotal</th>
+                                                                        <th width="14%" style="text-align: right;">Cash Offer</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
@@ -446,7 +446,7 @@
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <th>Shipping:</th>
-                                                                                    <td>Free</td>
+                                                                                    <td>FREE</td>
                                                                                     <!-- <td>${{ number_format($shippingFee, 2, '.', ',') }}</td> -->
                                                                                 </tr>
                                                                                 <tr>
