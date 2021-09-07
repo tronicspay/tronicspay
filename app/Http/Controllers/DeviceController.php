@@ -684,7 +684,7 @@ class DeviceController extends Controller
             $customer = Auth::guard('customer')->user();
             $request['fname'] = $customer['fname'];
             $request['lname'] = $customer['lname'];
-            $request['address1'] = $customer['address1'];
+            //$request['address1'] = $customer['address1'];
             $request['email'] = $customer['email'];
         } else {
             if ($request['fname'] == null) {
