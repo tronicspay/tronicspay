@@ -60,27 +60,27 @@
                                                             <div class="form-row">
                                                                 <div class="form-group col-md-6">
                                                                     <label class="col-form-label col-form-label-sm">First Name</label>
-                                                                    <input type="text" name="fname" class="form-control form-control-sm" {{ $user ? "value=".$fname : ''  }}> <!-- Juan -->
+                                                                    <input type="text" name="fname" class="form-control form-control-sm" value="{{ $user ? $fname : ''  }}"> <!-- Juan -->
                                                                 </div>
                                                                 <div class="form-group col-md-6">
                                                                     <label class="col-form-label col-form-label-sm">Last Name</label>
-                                                                    <input type="text" name="lname" class="form-control form-control-sm" {{ $user ? "value=".$lname : ''  }}> <!-- Dela Cruz -->
+                                                                    <input type="text" name="lname" class="form-control form-control-sm" value="{{ $user ? $lname : ''  }}"> <!-- Dela Cruz -->
                                                                 </div>
                                                             </div>
                                                             <div class="form-row">
                                                                 <div class="form-group col-md-6">
                                                                     <label class="col-form-label col-form-label-sm">Address Line 1</label>
-                                                                    <input id="address1-input" type="text" name="address1" class="form-control form-control-sm" {{ $user ? "value=".$address1 : ''  }} required autocomplete="off"> <!-- 179 N Harbor Dr -->
+                                                                    <input id="address1-input" type="text" name="address1" class="form-control form-control-sm" value="{{ $user ? $address1 : ''  }}" required autocomplete="off"> <!-- 179 N Harbor Dr -->
                                                                 </div>
                                                                 <div class="form-group col-md-6">
                                                                     <label class="col-form-label col-form-label-sm">Address Line 2 (Optional)</label>
-                                                                    <input type="text" name="address2" class="form-control form-control-sm" {{ $user ? "value=".$address2 : ''  }}>
+                                                                    <input type="text" name="address2" class="form-control form-control-sm" value="{{ $user ? $address2 : ''  }}">
                                                                 </div>
                                                             </div>
                                                             <div class="form-row">
                                                                 <div class="form-group col-md-4">
                                                                     <label class="col-form-label col-form-label-sm">City</label>
-                                                                    <input id="city-locality" type="text" name="city" class="form-control form-control-sm" {{ $user ? "value=".$city : ''  }}> <!-- Redondo Beach -->
+                                                                    <input id="city-locality" type="text" name="city" class="form-control form-control-sm" value="{{ $user ? $city : ''  }}"> <!-- Redondo Beach -->
                                                                 </div>
                                                                 <div class="form-group col-md-4" id="state-container">
                                                                     <label class="col-form-label col-form-label-sm">State</label>
@@ -89,13 +89,13 @@
                                                                 </div>
                                                                 <div class="form-group col-md-4">
                                                                     <label class="col-form-label col-form-label-sm">Zip Code</label>
-                                                                    <input type="text" name="zip_code" id="zip-code" class="form-control form-control-sm" {{ $user ? "value=".$zip : ''  }}> <!-- 90277 -->
+                                                                    <input type="text" name="zip_code" id="zip-code" class="form-control form-control-sm" value="{{ $user ? $zip : ''  }}"> <!-- 90277 -->
                                                                 </div>
                                                             </div>
                                                             <div class="form-row">
                                                                 <div class="form-group col-md-6">
                                                                     <label class="col-form-label col-form-label-sm">Email Address</label>
-                                                                    <input type="email" name="email" class="form-control form-control-sm" {{ $user ? "value=".$email : ''  }}>
+                                                                    <input type="email" name="email" class="form-control form-control-sm" value="{{ $user ? $email : ''  }}">
                                                                 </div>
                                                                 <div class="form-group col-md-6">
                                                                     <div class="row">
@@ -305,7 +305,7 @@
         , autoHideDialCode: true
         , autoPlaceholder: true
         , defaultCountry: "us",
-        // ipinfoToken: "yolo", 
+        // ipinfoToken: "yolo",
         nationalMode: false
         , numberType: "MOBILE"
         , onlyCountries: ['us', 'ca']
