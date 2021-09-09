@@ -838,25 +838,26 @@ class DeviceController extends Controller
                     $brand = $this->brandRepo->findByField('name', $value['brand']);
                     $product = $this->productRepo->rawByField("brand_id = ? and model = ?", [$brand->id, $value['model']]);
 
-                    if ($product->width > $max_width) {
-                        $max_width = $product->width;
+					$dimensions = array($product->height, $product->width, $product->length);
+					rsort($dimensions);
+					
+                    if ($dimensions[0] > $max_height) {
+                        $max_height = $dimensions[0];
                     }
-                    if ($product->height > $max_height) {
-                        $max_height = $product->height;
+                    if ($dimensions[1] > $max_width) {
+                        $max_width = $dimensions[1];
                     }
-                    if ($product->length > $max_length) {
-                        $max_length = $product->length;
-                    }
-
+                    $max_length = $max_length + $dimensions[2];
                     $total_weight = $total_weight + $product->weight * $value['quantity'];
                     $total_products = $total_products + $value['quantity'];
+					if ($total_weight == 0) { 
+						$total_weight = 10;
+					}
                 }
-
-
-                $parcel_height = $total_products * $max_height + 1;
+                $parcel_height = $max_height + 1;
                 $parcel_width = $max_width + 1;
                 $parcel_length = $max_length + 1;
-                $total_weight = $total_weight + 10;
+                $total_weight = ceil($total_weight);
             }
 
 
