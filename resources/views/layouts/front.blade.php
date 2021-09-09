@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+	@include('analytics')
 	<title>TronicsPay | Sell used Cell Phones, Game Consoles and Electronics. Get Paid!</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="robots" content="index, follow">
@@ -237,7 +238,7 @@
 		});
 		$(document).ready(function() {
 			if (localStorage.getItem("sessionCart")) {
-				$('.cart-counter').html('<i class="fas fa-shopping-cart fa-fw"></i> <span>' + JSON.parse(decryptData(localStorage.getItem("sessionCart"))).length + '</span>'); 
+				$('.cart-counter').html('<i class="fas fa-shopping-cart fa-fw"></i> <span>' + JSON.parse(decryptData(localStorage.getItem("sessionCart"))).length + '</span>');
 			}
 		});
 	</script>
