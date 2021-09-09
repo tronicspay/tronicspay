@@ -307,7 +307,7 @@ class OrderController extends Controller
                                                 <th width="14%"><center>Qty</center></th>
                                                 <th width="14%"><center>Condition</center></th>
                                                 <th width="14%"><center>Carrier</center></th>
-                                                <th width="14%" style="text-align: right;">Subtotal</th>
+                                                <th width="14%" style="text-align: right;">Cash Offer</th>
                                             </tr>
                                         </thead>
                                         <tbody>';
@@ -397,7 +397,7 @@ class OrderController extends Controller
                                             <table class="table" width="100%">
                                                 <tbody>
                                                     <tr>
-                                                        <th style="width:50%">Subtotal:</th>
+                                                        <th style="width:50%">Cash Offer:</th>
                                                         <td>$' . number_format($overallSubTotal, 2, '.', ',') . '</td>
                                                     </tr>
                                                     <tr>
@@ -453,9 +453,9 @@ class OrderController extends Controller
 
     /**
      * Bulk change status to complete
-     * 
+     *
      * @param Illuminate\Http\Request
-     * 
+     *
      * @return view
      */
     public function bulk_update(BulkCompleteRequest $request)

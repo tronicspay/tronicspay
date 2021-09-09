@@ -72,7 +72,7 @@ $overallSubTotal = 0;
                                     <th width="12%">
                                         <center>Carrier</center>
                                     </th>
-                                    <th width="12%" style="text-align: right;">Subtotal</th>
+                                    <th width="12%" style="text-align: right;">Cash Offer</th>
                                     <th width="12%"></th>
                                 </tr>
                             </thead>

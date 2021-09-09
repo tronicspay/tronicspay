@@ -126,7 +126,7 @@
                 <li class="nav-item has-treeview">
                     <a href="{{ url('customer/my-bundles') }}" class="nav-link {{ (isset($module) && $module == 'mybundles') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-shopping-basket"></i>
-                        <p>My Bundles</p>
+                        <p>My Orders</p>
                     </a>
                 </li>
                 <li class="nav-item has-treeview">
