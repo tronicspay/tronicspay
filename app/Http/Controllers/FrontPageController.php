@@ -277,14 +277,14 @@ class FrontPageController extends Controller
             //     $data['brands'] = $this->brandRepo->all();
 
             //     $data['meta'] = [
-            //             '<meta name="title" content="Cart - Tronics Pay" />', 
-            //             '<meta name="description" content="Sell your used cell phones and electronics. Sell your iPhone, Samsung Galaxy, iPad, Smart Watches, Game Consoles and more for cash. We will pay you!" />', 
-            //             '<meta property="og:type" content="article" />', 
+            //             '<meta name="title" content="Cart - Tronics Pay" />',
+            //             '<meta name="description" content="Sell your used cell phones and electronics. Sell your iPhone, Samsung Galaxy, iPad, Smart Watches, Game Consoles and more for cash. We will pay you!" />',
+            //             '<meta property="og:type" content="article" />',
             //             '<meta property="og:title" content="Cart - Tronics Pay" />',
-            //             '<meta property="og:url" content="'.url('/cart').'" />', 
+            //             '<meta property="og:url" content="'.url('/cart').'" />',
             //             '<meta property="og:description" content="Sell your used cell phones and electronics. Sell your iPhone, Samsung Galaxy, iPad, Smart Watches, Game Consoles and more for cash. We will pay you!" />',
-            //             '<meta name="twitter:title" content="Cart - Tronics Pay" />', 
-            //             '<meta name="twitter:image" content="'.url('/assets/images/logo-white.png').'" />', 
+            //             '<meta name="twitter:title" content="Cart - Tronics Pay" />',
+            //             '<meta name="twitter:image" content="'.url('/assets/images/logo-white.png').'" />',
             //             '<meta name="twitter:url" content="'.url('/cart').'" />',
             //             '<meta name="twitter:description" content="Sell your used cell phones and electronics. Sell your iPhone, Samsung Galaxy, iPad, Smart Watches, Game Consoles and more for cash. We will pay you!" />'
             //     ];
@@ -533,41 +533,55 @@ class FrontPageController extends Controller
 
     public function paymentmethod(Request $request)
     {
+        $is_auth = (Auth::guard('customer')->check() != null) ? true : false;
+        if ($is_auth) {
+          $customer_id = Auth::guard('customer')->user()->id;
+          $customer_data = $this->customerRepo->rawByWithField(['addresses'], 'id = ?', [$customer_id]);
+          $data['fname'] = $customer_data['fname'];
+          $data['lname'] = $customer_data['lname'];
+          $data['email'] = $customer_data['email'];
+        }
+        $data['user'] = $is_auth;
         $method = $request['payment'];
         $content = '';
         if ($method == 'Apple Pay') {
             $content .= '<div class="form-group col-md-5">';
             $content .= '<label class="col-form-label col-form-label-sm">Apple ID</label>';
-            $content .= '<input type="text" name="account_username" class="form-control form-control-sm">';
-            $content .= '</div>';
+            $content .= '<input type="text" name="account_username" class="form-control form-control-sm" value="';
+            $content .= $data['user'] ? $data['email'] : '';
+            $content .= '"></div>';
         }
 
         if ($method == 'Google Pay') {
             $content .= '<div class="form-group col-md-5">';
             $content .= '<label class="col-form-label col-form-label-sm">Google Email or Mobile Number</label>';
-            $content .= '<input type="text" name="account_username" class="form-control form-control-sm">';
-            $content .= '</div>';
+            $content .= '<input type="text" name="account_username" class="form-control form-control-sm" value="';
+            $content .= $data['user'] ? $data['email'] : '';
+            $content .= '"></div>';
         }
 
         if ($method == 'Venmo') {
             $content .= '<div class="form-group col-md-5">';
             $content .= '<label class="col-form-label col-form-label-sm">Venmo Email or Mobile Number</label>';
-            $content .= '<input type="text" name="account_username" class="form-control form-control-sm">';
-            $content .= '</div>';
+            $content .= '<input type="text" name="account_username" class="form-control form-control-sm" value="';
+            $content .= $data['user'] ? $data['email'] : '';
+            $content .= '"></div>';
         }
 
         if ($method == 'Cash App') {
             $content .= '<div class="form-group col-md-5">';
             $content .= '<label class="col-form-label col-form-label-sm">Cash App Email or Mobile Number</label>';
-            $content .= '<input type="text" name="account_username" class="form-control form-control-sm">';
-            $content .= '</div>';
+            $content .= '<input type="text" name="account_username" class="form-control form-control-sm" value="';
+            $content .= $data['user'] ? $data['email'] : '';
+            $content .= '"></div>';
         }
 
         if ($method == 'Paypal') {
             $content .= '<div class="form-group col-md-5">';
             $content .= '<label class="col-form-label col-form-label-sm">Paypal Email Address</label>';
-            $content .= '<input type="text" name="account_username" class="form-control form-control-sm">';
-            $content .= '</div>';
+            $content .= '<input type="text" name="account_username" class="form-control form-control-sm" value="';
+            $content .= $data['user'] ? $data['email'] : '';
+            $content .= '"></div>';
         }
 
         if ($method == 'Bank Transfer') {
@@ -632,7 +646,7 @@ class FrontPageController extends Controller
                                                 <img src="' . $product['photo']['photo'] . '" class="img-fluid">
                                             </div>
                                             <div align="left" class="valign-middle font14 col-7 col-md-3">
-                                                <b>Model:</b> ' . $value['brand'] . ' ' . $value['model'] . '<br /> 
+                                                <b>Model:</b> ' . $value['brand'] . ' ' . $value['model'] . '<br />
                                                 <b>Storage:</b> ' . $value['storage'] . '<br />
                                                 <b>Carrier:</b> ' . $network['title'] . '<br />
                                                 <b>Condition: </b> ' . $device_type . '
@@ -714,7 +728,7 @@ class FrontPageController extends Controller
     <link rel="mask-icon" href="https://getbootstrap.com/docs/5.0/assets/img/favicons/safari-pinned-tab.svg" color="#7952b3">
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    
+
     <link rel="stylesheet" href="/themes/demo/css/style.css" />
 </head>
 <body>
