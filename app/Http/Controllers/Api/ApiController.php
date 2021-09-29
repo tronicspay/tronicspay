@@ -31,11 +31,12 @@ use App\Repositories\Admin\TemplateSmsEloquentRepository as SmsTemplate;
 use App\Repositories\Customer\CustomerRepositoryEloquent as Customer;
 
 use App\Models\TableList;
-use Saperemarketing\Phpmailer\Facades\Mailer;
 use App\Http\Requests\Admin\UserRequest;
 use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Http\Requests\Admin\SettingsBrandRequest as BrandRequest;
 use App\Models\Admin\SettingsStatus;
+use Illuminate\Mail\Message;
+use Illuminate\Support\Facades\Mail;
 use Twilio\Rest\Client;
 
 class ApiController extends Controller
@@ -676,7 +677,11 @@ class ApiController extends Controller
             $data['customer_transaction'] = $value;
             $data['shippingFee'] = $value['shipping_fee'];
             $content = view('mail.notifyday7', $data)->render();
-            Mailer::sendEmail($email, $subject, $content);
+            Mail::send([], [], function (Message $message) use ($email, $subject, $content) {
+                $message->to($email)
+                    ->subject($subject)
+                    ->setBody($content, 'text/html');
+            });
         }
 
         return true;
@@ -712,7 +717,11 @@ class ApiController extends Controller
             $data['customer_transaction'] = $value;
             $data['shippingFee'] = $value['shipping_fee'];
             $content = view('mail.notifyday29', $data)->render();
-            Mailer::sendEmail($email, $subject, $content);
+            Mail::send([], [], function (Message $message) use ($email, $subject, $content) {
+                $message->to($email)
+                    ->subject($subject)
+                    ->setBody($content, 'text/html');
+            });
         }
         return true;
     }
@@ -744,7 +753,11 @@ class ApiController extends Controller
             $email = $value['customer']['email'];
             $data['customer_transaction'] = $value;
             $content = view('mail.customerorder', $data)->render();
-            Mailer::sendEmail($email, $subject, $content);
+            Mail::send([], [], function (Message $message) use ($email, $subject, $content) {
+                $message->to($email)
+                    ->subject($subject)
+                    ->setBody($content, 'text/html');
+            });
             return $content;
         }
 
@@ -854,7 +867,13 @@ class ApiController extends Controller
         $email = $data['order']['customer']['email'];
         $subject = 'TronicsPay | Payment Order #' . $data['order']['order_no'];
         $content = view('mail.paymentOrder', $data)->render();
-        Mailer::sendEmail($email, $subject, $content);
+
+        Mail::send([], [], function (Message $message) use ($email, $subject, $content) {
+            $message->to($email)
+                ->subject($subject)
+                ->setBody($content, 'text/html');
+        });
+
         $response['status'] = 200;
         $response['message'] = 'Order # ' . $data['order']['order_no'] . ' has been successfully paid';
 

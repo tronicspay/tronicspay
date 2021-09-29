@@ -22,7 +22,6 @@
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.1",
         "laravelcollective/html": "^6.2",
-        "phpmailer/phpmailer": "^6.2",
         "proengsoft/laravel-jsvalidation": "^4.4",
         "propaganistas/laravel-phone": "^4.3",
         "srmklive/paypal": "^3.0",
@@ -52,8 +51,7 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
-            "Saperemarketing\\SCart\\": "packages/saperecart/src/",
-            "Saperemarketing\\Phpmailer\\": "packages/saperemail/src/"
+            "Saperemarketing\\SCart\\": "packages/saperecart/src/"
         },
         "files": [
             "app/Support/Helpers.php"

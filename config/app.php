@@ -170,7 +170,6 @@ return [
          */
         Yajra\DataTables\DataTablesServiceProvider::class,
         Saperemarketing\SCart\ShoppingcartServiceProvider::class,
-        Saperemarketing\Phpmailer\PhpmailerServiceProvider::class,
         /*
          * Application Service Providers...
          */
