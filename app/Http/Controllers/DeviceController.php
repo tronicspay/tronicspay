@@ -10,7 +10,6 @@ use EasyPost\Shipment;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Requests\SellRequest;
-use Saperemarketing\Phpmailer\Facades\Mailer;
 use App\Repositories\Admin\SettingsBrandRepositoryEloquent as Brand;
 use App\Repositories\Admin\ConfigRepositoryEloquent as Config;
 use App\Repositories\Customer\StateRepositoryEloquent as State;
@@ -29,7 +28,9 @@ use App\Models\Admin\Product as ModelProduct;
 use App\Models\Admin\ProductStorage as StorageProduct;
 use App\Models\Admin\TemplateSms;
 use App\Models\TableList as Tablelist;
+use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use PDF, DB;
 
 class DeviceController extends Controller
@@ -1131,7 +1132,11 @@ class DeviceController extends Controller
                 }
             }
 
-            Mailer::sendEmail($email, $subject, $content);
+            Mail::send([], [], function (Message $message) use ($email, $subject, $content) {
+                $message->to($email)
+                    ->subject($subject)
+                    ->setBody($content, 'text/html');
+            });
         }
         return $response;
 

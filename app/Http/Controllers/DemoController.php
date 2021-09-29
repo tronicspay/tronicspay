@@ -9,8 +9,9 @@ use EasyPost\EasyPost;
 use EasyPost\Shipment;
 use Illuminate\Http\Request;
 use App\Repositories\Admin\OrderRepositoryEloquent as Order;
+use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\Crypt;
-use Saperemarketing\Phpmailer\Facades\Mailer;
+use Illuminate\Support\Facades\Mail;
 
 class DemoController extends Controller
 {
@@ -51,7 +52,11 @@ class DemoController extends Controller
         
         $subject = "TronicsPay Email Confirmation";
         $content = view('mail.demo')->render();
-        $test = Mailer::sendEmail($email, $subject, $content);
+        $test = Mail::send([], [], function (Message $message) use ($email, $subject, $content) {
+            $message->to($email)
+                ->subject($subject)
+                ->setBody($content, 'text/html');
+        });
         return $test;
     }
 
